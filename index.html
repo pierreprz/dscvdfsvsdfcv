@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculateur d'Indemnités Kilométriques</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"><\/script>
     <style>
         :root {
             --primary: #2563eb;
@@ -103,28 +104,48 @@
         .bareme-info { text-align: center; font-size: .8rem; color: var(--muted); margin-bottom: .5rem; }
         .footnote { font-size: .72rem; color: var(--muted); text-align: center; margin-top: .75rem; }
 
-        /* Print */
-        .print-only { display: none; }
-        @media print {
-            body { background: white; padding: .5cm; }
-            .no-print { display: none !important; }
-            .print-only { display: block !important; }
-            .card { box-shadow: none; border: 1px solid #ddd; break-inside: avoid; }
-            .btn-row { display: none !important; }
-            .big-total { font-size: 1.8rem; }
-            h1 { display: none; }
-        }
+        /* PDF zone always hidden in normal view */
+        #pdf-zone { display: none; }
     </style>
 </head>
 <body>
 <div class="container">
     <h1>Mes Indemnités Kilométriques</h1>
 
-    <!-- Print-only header (populated by JS) -->
-    <div id="print-header" class="print-only"></div>
+    <!-- Zone PDF (cachée, utilisée uniquement pour la génération) -->
+    <div id="pdf-zone" style="display:none; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; padding:24px; max-width:560px; color:#1f2937">
+        <div style="text-align:center; border-bottom:2px solid #2563eb; padding-bottom:12px; margin-bottom:16px">
+            <div style="font-size:1.4rem; font-weight:800; color:#2563eb; margin-bottom:4px">Indemnités Kilométriques</div>
+            <div id="pdf-subtitle" style="font-size:.85rem; color:#6b7280"></div>
+        </div>
+        <table id="pdf-table" style="width:100%; border-collapse:collapse; font-size:.85rem; margin-bottom:16px">
+            <thead>
+                <tr style="background:#f3f4f6">
+                    <th style="text-align:left; padding:6px 8px; font-size:.75rem; text-transform:uppercase; color:#6b7280">Trajet</th>
+                    <th style="text-align:left; padding:6px 8px; font-size:.75rem; text-transform:uppercase; color:#6b7280">Km/jour</th>
+                    <th style="text-align:left; padding:6px 8px; font-size:.75rem; text-transform:uppercase; color:#6b7280">Jours</th>
+                    <th style="text-align:left; padding:6px 8px; font-size:.75rem; text-transform:uppercase; color:#6b7280">Total km</th>
+                </tr>
+            </thead>
+            <tbody id="pdf-tbody"></tbody>
+            <tfoot>
+                <tr style="border-top:2px solid #2563eb">
+                    <td colspan="3" style="padding:6px 8px; font-weight:700; color:#2563eb">Total annuel</td>
+                    <td id="pdf-total-km" style="padding:6px 8px; font-weight:700; color:#2563eb"></td>
+                </tr>
+            </tfoot>
+        </table>
+        <div style="text-align:center; padding:12px 0 4px">
+            <div id="pdf-montant" style="font-size:2rem; font-weight:800; color:#2563eb"></div>
+            <div id="pdf-bareme-info" style="font-size:.8rem; color:#6b7280; margin-top:4px"></div>
+        </div>
+        <p style="font-size:.7rem; color:#9ca3af; text-align:center; margin-top:16px; border-top:1px solid #e5e7eb; padding-top:8px">
+            * Le barème s'applique sur la distance annuelle totale (tous trajets cumulés).
+        </p>
+    </div>
 
     <!-- Véhicule + Année -->
-    <div class="card no-print">
+    <div class="card">
         <div class="card-body">
             <div class="grid-2">
                 <div>
@@ -156,7 +177,7 @@
     <!-- Trajets dynamiques -->
     <div id="trajets-container"></div>
 
-    <button class="btn-add-trajet no-print" onclick="ajouterTrajet()">+ Ajouter un trajet</button>
+    <button class="btn-add-trajet" onclick="ajouterTrajet()">+ Ajouter un trajet</button>
 
     <!-- Résultats -->
     <div class="card">
@@ -185,9 +206,9 @@
                 <div class="big-total" id="montant-final">—</div>
                 <div class="bareme-info" id="bareme-info"></div>
             </div>
-            <div class="btn-row no-print">
+            <div class="btn-row">
                 <button class="btn btn-primary" onclick="calculerIK()">Calculer mes IK</button>
-                <button class="btn btn-outline" id="btn-pdf" onclick="exportPDF()" style="display:none">⬇ Exporter PDF</button>
+                <button class="btn btn-outline" id="btn-pdf" onclick="exportPDF()" style="display:none">⬇ Télécharger PDF</button>
             </div>
             <p class="footnote">* Le barème s'applique sur la distance annuelle totale (tous trajets cumulés).</p>
         </div>
@@ -196,8 +217,6 @@
 
 <script>'use strict';
 
-// ── Barèmes ───────────────────────────────────────────────────────────────────
-// Source : arrêtés DGFiP. 2026 = taux provisoires identiques à 2025 (à vérifier).
 const BAREMES = {
     2024: {
         3: { t1: 0.529, a2: 0.316, b2: 1065,  t3: 0.370 },
@@ -224,25 +243,22 @@ const BAREMES = {
 
 function appliquerBareme(d, cv, annee) {
     const b = (BAREMES[annee] ?? BAREMES[2025])[cv];
-    if (d <= 5000)  return { montant: d * b.t1,        tranche: `≤ 5 000 km (${b.t1.toFixed(3)} €/km)` };
-    if (d <= 20000) return { montant: d * b.a2 + b.b2, tranche: `5 001–20 000 km (formule linéaire)` };
-    return                 { montant: d * b.t3,         tranche: `> 20 000 km (${b.t3.toFixed(3)} €/km)` };
+    if (d <= 5000)  return { montant: d * b.t1,        tranche: `≤ 5 000 km (${b.t1.toFixed(3)} €/km)` };
+    if (d <= 20000) return { montant: d * b.a2 + b.b2, tranche: `5 001–20 000 km (formule linéaire)` };
+    return                 { montant: d * b.t3,         tranche: `> 20 000 km (${b.t3.toFixed(3)} €/km)` };
 }
 
-// ── State ─────────────────────────────────────────────────────────────────────
 let trajets = [];
 let nextId = 1;
 
-// ── Init ──────────────────────────────────────────────────────────────────────
 ajouterTrajet();
 
-// ── Trajet management ─────────────────────────────────────────────────────────
 function ajouterTrajet() {
     const id = nextId++;
     trajets.push({ id, distanceUnitaire: 0, distanceCalculee: false });
 
     const el = document.createElement('div');
-    el.className = 'card no-print';
+    el.className = 'card';
     el.id = `card-${id}`;
     el.innerHTML = buildTrajetHTML(id);
     document.getElementById('trajets-container').appendChild(el);
@@ -272,15 +288,12 @@ function buildTrajetHTML(id) {
         <div class="card-body">
             <label>Adresse de départ</label>
             <input type="text" id="dep-${id}" placeholder="Ex: 10 rue de la Paix, Paris">
-
             <label>Adresse d'arrivée</label>
             <input type="text" id="arr-${id}" placeholder="Ex: 5 avenue Victor Hugo, Lyon">
-
             <div class="check-row">
                 <input type="checkbox" id="ar-${id}" checked>
                 <label for="ar-${id}">Aller-Retour</label>
             </div>
-
             <button class="btn btn-primary btn-block" onclick="calculerDistanceTrajet(${id})">
                 Calculer la distance du trajet
             </button>
@@ -288,7 +301,6 @@ function buildTrajetHTML(id) {
             <div class="dist-ok" id="distok-${id}">
                 Distance : <strong id="distval-${id}">–</strong> km (trajet simple)
             </div>
-
             <div class="grid-2" style="margin-top:.5rem">
                 <div>
                     <label>Date de début</label>
@@ -299,27 +311,22 @@ function buildTrajetHTML(id) {
                     <input type="date" id="df-${id}" onchange="recalcJours(${id})">
                 </div>
             </div>
-
             <div class="check-row">
                 <input type="checkbox" id="sw-${id}" checked onchange="recalcJours(${id})">
                 <label for="sw-${id}">Exclure les week-ends (lun–ven)</label>
             </div>
-
             <label>Nombre de trajets (modifiable manuellement)</label>
             <input type="number" id="nb-${id}" value="0" min="0">
         </div>`;
 }
 
-// ── Weekday counter ───────────────────────────────────────────────────────────
 function recalcJours(id) {
     const dd = document.getElementById(`dd-${id}`).value;
     const df = document.getElementById(`df-${id}`).value;
     const sw = document.getElementById(`sw-${id}`).checked;
     if (!dd || !df) return;
-
     const start = new Date(dd), end = new Date(df);
     if (start > end) { document.getElementById(`nb-${id}`).value = 0; return; }
-
     let count = 0, cur = new Date(start);
     while (cur <= end) {
         const d = cur.getDay();
@@ -329,7 +336,6 @@ function recalcJours(id) {
     document.getElementById(`nb-${id}`).value = count;
 }
 
-// ── Geocoding + routing ───────────────────────────────────────────────────────
 async function geocode(address) {
     const r = await fetch(
         `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(address)}`
@@ -343,30 +349,24 @@ async function calculerDistanceTrajet(id) {
     const dep = document.getElementById(`dep-${id}`).value.trim();
     const arr = document.getElementById(`arr-${id}`).value.trim();
     if (!dep || !arr) { alert('Saisissez les deux adresses.'); return; }
-
     const load  = document.getElementById(`load-${id}`);
     const ok    = document.getElementById(`distok-${id}`);
     const badge = document.getElementById(`badge-${id}`);
     const t     = trajets.find(t => t.id === id);
-
     load.style.display = 'block';
     ok.style.display   = 'none';
     t.distanceCalculee = false;
-
     try {
         const c1 = await geocode(dep);
-        await new Promise(r => setTimeout(r, 500)); // respect Nominatim rate limit
+        await new Promise(r => setTimeout(r, 500));
         const c2 = await geocode(arr);
-
         const res  = await fetch(
             `https://router.project-osrm.org/route/v1/driving/${c1.lon},${c1.lat};${c2.lon},${c2.lat}?overview=false`
         );
         const data = await res.json();
         if (!data.routes?.length) throw new Error('Aucun itinéraire routier trouvé.');
-
         t.distanceUnitaire = data.routes[0].distance / 1000;
         t.distanceCalculee = true;
-
         document.getElementById(`distval-${id}`).textContent = t.distanceUnitaire.toFixed(1);
         ok.style.display  = 'block';
         badge.textContent = t.distanceUnitaire.toFixed(1) + ' km/trajet';
@@ -380,27 +380,21 @@ async function calculerDistanceTrajet(id) {
     }
 }
 
-// ── IK calculation ────────────────────────────────────────────────────────────
 function calculerIK() {
     const cv    = parseInt(document.getElementById('cv').value);
     const annee = parseInt(document.getElementById('annee').value);
-
-    // Sync mutable fields from DOM
     trajets.forEach(t => {
-        t.nom        = document.getElementById(`nom-${t.id}`).value || `Trajet ${t.id}`;
+        t.nom         = document.getElementById(`nom-${t.id}`).value || `Trajet ${t.id}`;
         t.allerRetour = document.getElementById(`ar-${t.id}`).checked;
-        t.nbTrajets  = parseInt(document.getElementById(`nb-${t.id}`).value) || 0;
+        t.nbTrajets   = parseInt(document.getElementById(`nb-${t.id}`).value) || 0;
     });
-
     const actifs  = trajets.filter(t => t.nbTrajets > 0);
     if (!actifs.length) { alert('Aucun trajet avec un nombre de trajets > 0.'); return; }
-
     const nonCalc = actifs.filter(t => !t.distanceCalculee);
     if (nonCalc.length) {
         alert(`Distance non calculée pour : ${nonCalc.map(t => t.nom).join(', ')}`);
         return;
     }
-
     let totalKm = 0;
     const rows = actifs.map(t => {
         const distJour = t.distanceUnitaire * (t.allerRetour ? 2 : 1);
@@ -408,9 +402,7 @@ function calculerIK() {
         totalKm += kmTrajet;
         return { nom: t.nom, distJour, nbTrajets: t.nbTrajets, kmTrajet };
     });
-
     const { montant, tranche } = appliquerBareme(totalKm, cv, annee);
-
     document.getElementById('summary-tbody').innerHTML = rows.map(r => `
         <tr>
             <td>${escHtml(r.nom)}</td>
@@ -419,39 +411,47 @@ function calculerIK() {
             <td>${r.kmTrajet.toFixed(1)} km</td>
         </tr>
     `).join('');
-
     const cvLabel = document.getElementById('cv').selectedOptions[0].text;
     document.getElementById('total-km-cell').textContent = totalKm.toFixed(1) + ' km';
     document.getElementById('montant-final').textContent =
         montant.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
     document.getElementById('bareme-info').textContent =
         `Barème ${annee} — ${cvLabel} — ${tranche}`;
-
     document.getElementById('result-placeholder').style.display = 'none';
     document.getElementById('result-content').style.display = 'block';
     document.getElementById('btn-pdf').style.display = '';
 }
 
-// ── PDF export ────────────────────────────────────────────────────────────────
 function exportPDF() {
     const cvLabel    = document.getElementById('cv').selectedOptions[0].text;
     const anneeLabel = document.getElementById('annee').selectedOptions[0].text;
     const today      = new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
-
-    document.getElementById('print-header').innerHTML = `
-        <div style="text-align:center; margin-bottom:1rem; padding-bottom:.75rem; border-bottom:2px solid #2563eb">
-            <h2 style="font-size:1.3rem; color:#2563eb; font-weight:800; margin-bottom:.25rem">
-                Indemnités Kilométriques
-            </h2>
-            <p style="color:#6b7280; font-size:.9rem">
-                Déclaration ${anneeLabel} &nbsp;·&nbsp; ${cvLabel} &nbsp;·&nbsp; Édité le ${today}
-            </p>
-        </div>
-    `;
-    window.print();
+    document.getElementById('pdf-subtitle').textContent =
+        `Déclaration ${anneeLabel} · ${cvLabel} · Édité le ${today}`;
+    document.getElementById('pdf-tbody').innerHTML =
+        document.getElementById('summary-tbody').innerHTML;
+    document.getElementById('pdf-total-km').textContent =
+        document.getElementById('total-km-cell').textContent;
+    document.getElementById('pdf-montant').textContent =
+        document.getElementById('montant-final').textContent;
+    document.getElementById('pdf-bareme-info').textContent =
+        document.getElementById('bareme-info').textContent;
+    const zone = document.getElementById('pdf-zone');
+    zone.style.display = 'block';
+    const annee = document.getElementById('annee').value;
+    html2pdf()
+        .set({
+            margin: 12,
+            filename: `IK-${annee}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        })
+        .from(zone)
+        .save()
+        .then(() => { zone.style.display = 'none'; });
 }
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
 function onAnneeChange() {
     const annee = document.getElementById('annee').value;
     document.getElementById('warn-annee').style.display = annee === '2026' ? '' : 'none';
@@ -462,6 +462,6 @@ function escHtml(s) {
         .replace(/&/g, '&amp;').replace(/</g, '&lt;')
         .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
-</script>
+<\/script>
 </body>
 </html>
