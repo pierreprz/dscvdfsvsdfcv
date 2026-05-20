@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculateur d'Indemnités Kilométriques</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg: #f3f4f6;
+            --card: #ffffff;
+            --text: #1f2937;
+            --border: #e5e7eb;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            padding: 2rem;
+            margin: 0;
+        }
+        .container {
+            background-color: var(--card);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            width: 100%;
+            max-width: 500px;
+        }
+        h1 {
+            font-size: 1.5rem;
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+        }
+        .section {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        h2 {
+            font-size: 1.1rem;
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+        label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+        input[type="text"], input[type="date"], select, input[type="number"] {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            box-sizing: border-box;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .checkbox-group input {
+            margin-right: 0.5rem;
+            width: 1.2rem;
+            height: 1.2rem;
+        }
+        .checkbox-group label {
+            margin-bottom: 0;
+            cursor: pointer;
+        }
+        button {
+            width: 100%;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        button:hover {
+            background-color: var(--primary-hover);
+        }
+        button:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+        }
+        .result-box {
+            background-color: #eff6ff;
+            border: 1px solid #bfdbfe;
+            padding: 1rem;
+            border-radius: 6px;
+            margin-top: 1rem;
+            display: none;
+        }
+        .result-box p {
+            margin: 0.5rem 0;
+            font-size: 0.95rem;
+        }
+        .total-price {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: var(--primary);
+            text-align: center;
+            margin-top: 1rem !important;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #6b7280;
+            margin-top: 0.5rem;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Mes Indemnités Kilométriques</h1>
+
+    <!-- SECTION 1 : VÉHICULE -->
+    <div class="section">
+        <h2>1. Mon véhicule</h2>
+        <label for="cv">Puissance fiscale (Chevaux Fiscaux)</label>
+        <select id="cv">
+            <option value="3">3 CV et moins</option>
+            <option value="4">4 CV</option>
+            <option value="5">5 CV</option>
+            <option value="6">6 CV</option>
+            <option value="7">7 CV et plus</option>
+        </select>
+    </div>
+
+    <!-- SECTION 2 : ITINÉRAIRE -->
+    <div class="section">
+        <h2>2. L'itinéraire</h2>
+        <label for="depart">Adresse de départ</label>
+        <input type="text" id="depart" placeholder="Ex: 10 rue de la Paix, Paris">
+
+        <label for="arrivee">Adresse d'arrivée</label>
+        <input type="text" id="arrivee" placeholder="Ex: 5 avenue de l'Opéra, Paris">
+
+        <div class="checkbox-group">
+            <input type="checkbox" id="aller-retour" checked>
+            <label for="aller-retour">C'est un Aller-Retour</label>
+        </div>
+
+        <button id="btn-distance" onclick="calculerDistance()">Calculer la distance du trajet</button>
+        <div id="loading-distance" class="loading">Recherche de l'itinéraire en cours...</div>
+
+        <div id="result-distance" class="result-box">
+            <p><strong>Distance :</strong> <span id="valeur-distance">-</span> km (par trajet)</p>
+        </div>
+    </div>
+
+    <!-- SECTION 3 : CALENDRIER -->
+    <div class="section">
+        <h2>3. Période travaillée</h2>
+        <p style="font-size: 0.85rem; color: #6b7280; margin-top: -0.5rem;">Sélectionnez la période pour calculer automatiquement le nombre de trajets.</p>
+
+        <div class="grid-2">
+            <div>
+                <label for="date-debut">Date de début</label>
+                <input type="date" id="date-debut">
+            </div>
+            <div>
+                <label for="date-fin">Date de fin</label>
+                <input type="date" id="date-fin">
+            </div>
+        </div>
+
+        <div class="checkbox-group">
+            <input type="checkbox" id="sans-weekend" checked onchange="mettreAJourJours()">
+            <label for="sans-weekend">Exclure les week-ends (Lun-Ven uniquement)</label>
+        </div>
+
+        <label for="nb-trajets">Nombre total de trajets (modifiable manuellement)</label>
+        <input type="number" id="nb-trajets" value="0" min="1">
+    </div>
+
+    <!-- SECTION 4 : RÉSULTAT FINAL -->
+    <div class="section">
+        <button id="btn-calcul-ik" onclick="calculerIK()" disabled>Estimer mes IK</button>
+
+        <div id="result-final" class="result-box">
+            <p><strong>Total parcouru :</strong> <span id="total-km">0</span> km</p>
+            <p><strong>Barème appliqué :</strong> <span id="bareme-texte">-</span></p>
+            <p class="total-price">Montant estimé : <span id="montant-ik">0.00</span> €</p>
+            <p style="font-size: 0.75rem; color: #6b7280; text-align: center; margin-top: 1rem;">
+                *Basé sur le barème URSSAF standard de l'année. Les IK se calculent officiellement sur la distance annuelle totale.
+            </p>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    let distanceUnitaire = 0;
+
+    // Mise à jour automatique du nombre de jours quand on change les dates
+    document.getElementById('date-debut').addEventListener('change', mettreAJourJours);
+    document.getElementById('date-fin').addEventListener('change', mettreAJourJours);
+
+    function mettreAJourJours() {
+        const dateDebut = document.getElementById('date-debut').value;
+        const dateFin = document.getElementById('date-fin').value;
+        const sansWeekend = document.getElementById('sans-weekend').checked;
+
+        if (!dateDebut || !dateFin) return;
+
+        let start = new Date(dateDebut);
+        let end = new Date(dateFin);
+
+        if (start > end) {
+            document.getElementById('nb-trajets').value = 0;
+            return;
+        }
+
+        let count = 0;
+        let current = new Date(start);
+
+        while (current <= end) {
+            const jourDeLaSemaine = current.getDay(); // 0 = Dimanche, 6 = Samedi
+            if (!sansWeekend || (jourDeLaSemaine !== 0 && jourDeLaSemaine !== 6)) {
+                count++;
+            }
+            current.setDate(current.getDate() + 1);
+        }
+
+        document.getElementById('nb-trajets').value = count;
+    }
+
+    // Obtenir les coordonnées GPS d'une adresse via OpenStreetMap
+    async function getCoordinates(address) {
+        const url = `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(address)}`;
+        const response = await fetch(url);
+        const data = await response.json();
+        if (data && data.length > 0) {
+            return { lat: data[0].lat, lon: data[0].lon };
+        }
+        throw new Error(`L'adresse "${address}" est introuvable.`);
+    }
+
+    // Obtenir la distance entre deux coordonnées
+    async function calculerDistance() {
+        const depart = document.getElementById('depart').value;
+        const arrivee = document.getElementById('arrivee').value;
+        const resultBox = document.getElementById('result-distance');
+        const loading = document.getElementById('loading-distance');
+        const btnCalcul = document.getElementById('btn-calcul-ik');
+
+        if (!depart || !arrivee) {
+            alert("Veuillez saisir une adresse de départ et d'arrivée.");
+            return;
+        }
+
+        loading.style.display = 'block';
+        resultBox.style.display = 'none';
+        btnCalcul.disabled = true;
+
+        try {
+            const coordDepart = await getCoordinates(depart);
+            // Petit délai pour respecter les limites de l'API gratuite
+            await new Promise(resolve => setTimeout(resolve, 500));
+            const coordArrivee = await getCoordinates(arrivee);
+
+            const urlRoute = `https://router.project-osrm.org/route/v1/driving/${coordDepart.lon},${coordDepart.lat};${coordArrivee.lon},${coordArrivee.lat}?overview=false`;
+            const responseRoute = await fetch(urlRoute);
+            const dataRoute = await responseRoute.json();
+
+            if (dataRoute.routes && dataRoute.routes.length > 0) {
+                // La distance est renvoyée en mètres, on convertit en km
+                distanceUnitaire = dataRoute.routes[0].distance / 1000;
+
+                document.getElementById('valeur-distance').innerText = distanceUnitaire.toFixed(1);
+                resultBox.style.display = 'block';
+                btnCalcul.disabled = false;
+            } else {
+                alert("Aucun itinéraire routier trouvé entre ces deux adresses.");
+            }
+        } catch (error) {
+            alert("Erreur: " + error.message);
+        } finally {
+            loading.style.display = 'none';
+        }
+    }
+
+    // Calcul des IK finaux selon le barème officiel
+    function calculerIK() {
+        const cv = parseInt(document.getElementById('cv').value);
+        const isAllerRetour = document.getElementById('aller-retour').checked;
+        const nbTrajets = parseInt(document.getElementById('nb-trajets').value) || 0;
+
+        if (nbTrajets <= 0) {
+            alert("Veuillez entrer un nombre de trajets valide (ou sélectionner une période valide).");
+            return;
+        }
+
+        // Calcul de la distance totale
+        let distanceParJour = isAllerRetour ? (distanceUnitaire * 2) : distanceUnitaire;
+        let distanceTotale = distanceParJour * nbTrajets;
+        let d = distanceTotale;
+
+        // Barème URSSAF standard (Automobiles)
+        // d = distance. Formules: jusqu'à 5000km / de 5001 à 20000km / plus de 20000km
+        let montant = 0;
+        let tranche = "";
+
+        if (d <= 5000) {
+            tranche = "Jusqu'à 5 000 km";
+            if (cv <= 3) montant = d * 0.529;
+            else if (cv === 4) montant = d * 0.606;
+            else if (cv === 5) montant = d * 0.636;
+            else if (cv === 6) montant = d * 0.665;
+            else montant = d * 0.697; // 7 CV et plus
+        } else if (d <= 20000) {
+            tranche = "De 5 001 à 20 000 km";
+            if (cv <= 3) montant = (d * 0.316) + 1065;
+            else if (cv === 4) montant = (d * 0.340) + 1330;
+            else if (cv === 5) montant = (d * 0.357) + 1395;
+            else if (cv === 6) montant = (d * 0.374) + 1457;
+            else montant = (d * 0.394) + 1515; // 7 CV et plus
+        } else {
+            tranche = "Plus de 20 000 km";
+            if (cv <= 3) montant = d * 0.370;
+            else if (cv === 4) montant = d * 0.407;
+            else if (cv === 5) montant = d * 0.427;
+            else if (cv === 6) montant = d * 0.447;
+            else montant = d * 0.470; // 7 CV et plus
+        }
+
+        // Affichage des résultats
+        document.getElementById('total-km').innerText = d.toFixed(1);
+        document.getElementById('bareme-texte').innerText = tranche + ` (${cv} CV)`;
+        document.getElementById('montant-ik').innerText = montant.toFixed(2);
+
+        document.getElementById('result-final').style.display = 'block';
+    }
+</script>
+
+</body>
+</html>
