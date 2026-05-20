@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculateur d'Indemnités Kilométriques</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --bg: #f3f4f6;
+            --card: #ffffff;
+            --text: #1f2937;
+            --muted: #6b7280;
+            --border: #e5e7eb;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            padding: 1.5rem;
+        }
+        .container { max-width: 580px; margin: 0 auto; }
+        h1 { font-size: 1.4rem; text-align: center; color: var(--primary); margin-bottom: 1.25rem; }
+
+        /* Cards */
+        .card { background: var(--card); border-radius: 10px; box-shadow: 0 1px 4px rgba(0,0,0,.1); margin-bottom: 1rem; }
+        .card-header {
+            display: flex; align-items: center; gap: .5rem;
+            padding: .65rem 1rem;
+            background: #eff6ff; border-radius: 10px 10px 0 0; border-bottom: 1px solid #bfdbfe;
+        }
+        .card-header-name {
+            flex: 1; border: none; background: transparent;
+            font-weight: 600; font-size: .95rem; color: var(--primary);
+            min-width: 0; padding: 0;
+        }
+        .card-header-name:focus { outline: none; }
+        .card-body { padding: 1rem; }
+
+        /* Badges */
+        .badge { font-size: .75rem; padding: .2rem .6rem; border-radius: 999px; white-space: nowrap; }
+        .badge-pending { background: #fef9c3; color: #a16207; }
+        .badge-ok      { background: #dcfce7; color: #15803d; }
+        .badge-error   { background: #fee2e2; color: #b91c1c; }
+
+        /* Form */
+        label { display: block; font-size: .8rem; font-weight: 500; color: var(--muted); margin-bottom: .3rem; }
+        input[type=text], input[type=date], input[type=number], select {
+            width: 100%; padding: .55rem .7rem;
+            border: 1px solid var(--border); border-radius: 6px;
+            font-size: .9rem; color: var(--text); background: white; margin-bottom: .75rem;
+        }
+        input:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 2px rgba(37,99,235,.15); }
+        .check-row { display: flex; align-items: center; gap: .5rem; margin-bottom: .75rem; }
+        .check-row input[type=checkbox] { width: 1rem; height: 1rem; accent-color: var(--primary); flex-shrink: 0; }
+        .check-row label { margin: 0; font-size: .85rem; color: var(--text); cursor: pointer; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+
+        /* Buttons */
+        .btn { padding: .55rem 1rem; border: none; border-radius: 6px; font-size: .9rem; font-weight: 600; cursor: pointer; transition: opacity .15s; }
+        .btn:hover { opacity: .85; }
+        .btn:disabled { opacity: .45; cursor: not-allowed; }
+        .btn-primary  { background: var(--primary); color: white; }
+        .btn-outline  { background: transparent; color: var(--primary); border: 1.5px solid var(--primary); }
+        .btn-danger-ghost { background: transparent; color: var(--danger); border: 1px solid var(--danger); padding: .25rem .55rem; font-size: .75rem; }
+        .btn-block { width: 100%; }
+        .btn-row { display: flex; gap: .75rem; margin-top: .75rem; }
+        .btn-row .btn { flex: 1; }
+
+        /* Misc */
+        .dist-ok {
+            background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px;
+            padding: .45rem .75rem; font-size: .85rem; color: #166534;
+            margin-bottom: .75rem; display: none;
+        }
+        .loading-msg { font-size: .82rem; color: var(--muted); text-align: center; padding: .4rem 0; display: none; }
+        .btn-add-trajet {
+            width: 100%; padding: .7rem; background: white;
+            border: 2px dashed #93c5fd; border-radius: 10px;
+            color: var(--primary); font-size: .95rem; font-weight: 600;
+            cursor: pointer; margin-bottom: 1rem; transition: background .15s;
+        }
+        .btn-add-trajet:hover { background: #eff6ff; }
+        .warning {
+            background: #fffbeb; border: 1px solid #fcd34d; border-radius: 6px;
+            padding: .6rem .75rem; font-size: .8rem; color: #92400e; margin-top: .5rem;
+        }
+
+        /* Results */
+        .result-placeholder { font-size: .85rem; color: var(--muted); text-align: center; padding: 1rem 0; }
+        .summary-table { width: 100%; border-collapse: collapse; font-size: .85rem; margin-bottom: 1rem; }
+        .summary-table th {
+            text-align: left; padding: .4rem .5rem; background: var(--bg);
+            color: var(--muted); font-size: .78rem; text-transform: uppercase; letter-spacing: .03em;
+        }
+        .summary-table td { padding: .4rem .5rem; border-bottom: 1px solid var(--border); }
+        .summary-table tfoot td { border-top: 2px solid var(--primary); border-bottom: none; font-weight: 700; color: var(--primary); }
+        .big-total { text-align: center; font-size: 2.2rem; font-weight: 800; color: var(--primary); padding: .75rem 0 .25rem; }
+        .bareme-info { text-align: center; font-size: .8rem; color: var(--muted); margin-bottom: .5rem; }
+        .footnote { font-size: .72rem; color: var(--muted); text-align: center; margin-top: .75rem; }
+
+        /* Print */
+        .print-only { display: none; }
+        @media print {
+            body { background: white; padding: .5cm; }
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            .card { box-shadow: none; border: 1px solid #ddd; break-inside: avoid; }
+            .btn-row { display: none !important; }
+            .big-total { font-size: 1.8rem; }
+            h1 { display: none; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Mes Indemnités Kilométriques</h1>
+
+    <!-- Print-only header (populated by JS) -->
+    <div id="print-header" class="print-only"></div>
+
+    <!-- Véhicule + Année -->
+    <div class="card no-print">
+        <div class="card-body">
+            <div class="grid-2">
+                <div>
+                    <label for="cv">Puissance fiscale</label>
+                    <select id="cv">
+                        <option value="3">3 CV et moins</option>
+                        <option value="4">4 CV</option>
+                        <option value="5" selected>5 CV</option>
+                        <option value="6">6 CV</option>
+                        <option value="7">7 CV et plus</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="annee">Année de déclaration</label>
+                    <select id="annee" onchange="onAnneeChange()">
+                        <option value="2024">2024 (revenus 2023)</option>
+                        <option value="2025" selected>2025 (revenus 2024)</option>
+                        <option value="2026">2026 (revenus 2025) ⚠️</option>
+                    </select>
+                </div>
+            </div>
+            <div id="warn-annee" class="warning" style="display:none">
+                ⚠️ Le barème 2026 n'a pas pu être vérifié (publié après ma date de connaissance).
+                Confirmez les taux officiels sur <strong>impots.gouv.fr</strong> avant de soumettre.
+            </div>
+        </div>
+    </div>
+
+    <!-- Trajets dynamiques -->
+    <div id="trajets-container"></div>
+
+    <button class="btn-add-trajet no-print" onclick="ajouterTrajet()">+ Ajouter un trajet</button>
+
+    <!-- Résultats -->
+    <div class="card">
+        <div class="card-body">
+            <div id="result-placeholder" class="result-placeholder">
+                Calculez la distance de chaque trajet puis cliquez sur « Calculer mes IK ».
+            </div>
+            <div id="result-content" style="display:none">
+                <table class="summary-table">
+                    <thead>
+                        <tr>
+                            <th>Trajet</th>
+                            <th>Km/jour</th>
+                            <th>Jours</th>
+                            <th>Total km</th>
+                        </tr>
+                    </thead>
+                    <tbody id="summary-tbody"></tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3">Total annuel</td>
+                            <td id="total-km-cell">—</td>
+                        </tr>
+                    </tfoot>
+                </table>
+                <div class="big-total" id="montant-final">—</div>
+                <div class="bareme-info" id="bareme-info"></div>
+            </div>
+            <div class="btn-row no-print">
+                <button class="btn btn-primary" onclick="calculerIK()">Calculer mes IK</button>
+                <button class="btn btn-outline" id="btn-pdf" onclick="exportPDF()" style="display:none">⬇ Exporter PDF</button>
+            </div>
+            <p class="footnote">* Le barème s'applique sur la distance annuelle totale (tous trajets cumulés).</p>
+        </div>
+    </div>
+</div>
+
+<script>'use strict';
+
+// ── Barèmes ───────────────────────────────────────────────────────────────────
+// Source : arrêtés DGFiP. 2026 = taux provisoires identiques à 2025 (à vérifier).
+const BAREMES = {
+    2024: {
+        3: { t1: 0.529, a2: 0.316, b2: 1065,  t3: 0.370 },
+        4: { t1: 0.606, a2: 0.340, b2: 1330,  t3: 0.407 },
+        5: { t1: 0.636, a2: 0.357, b2: 1395,  t3: 0.427 },
+        6: { t1: 0.665, a2: 0.374, b2: 1457,  t3: 0.447 },
+        7: { t1: 0.697, a2: 0.394, b2: 1515,  t3: 0.470 },
+    },
+    2025: {
+        3: { t1: 0.529, a2: 0.316, b2: 1065,  t3: 0.370 },
+        4: { t1: 0.606, a2: 0.340, b2: 1330,  t3: 0.407 },
+        5: { t1: 0.636, a2: 0.357, b2: 1395,  t3: 0.427 },
+        6: { t1: 0.665, a2: 0.374, b2: 1457,  t3: 0.447 },
+        7: { t1: 0.697, a2: 0.394, b2: 1515,  t3: 0.470 },
+    },
+    2026: {
+        3: { t1: 0.529, a2: 0.316, b2: 1065,  t3: 0.370 },
+        4: { t1: 0.606, a2: 0.340, b2: 1330,  t3: 0.407 },
+        5: { t1: 0.636, a2: 0.357, b2: 1395,  t3: 0.427 },
+        6: { t1: 0.665, a2: 0.374, b2: 1457,  t3: 0.447 },
+        7: { t1: 0.697, a2: 0.394, b2: 1515,  t3: 0.470 },
+    },
+};
+
+function appliquerBareme(d, cv, annee) {
+    const b = (BAREMES[annee] ?? BAREMES[2025])[cv];
+    if (d <= 5000)  return { montant: d * b.t1,        tranche: `≤ 5 000 km (${b.t1.toFixed(3)} €/km)` };
+    if (d <= 20000) return { montant: d * b.a2 + b.b2, tranche: `5 001–20 000 km (formule linéaire)` };
+    return                 { montant: d * b.t3,         tranche: `> 20 000 km (${b.t3.toFixed(3)} €/km)` };
+}
+
+// ── State ─────────────────────────────────────────────────────────────────────
+let trajets = [];
+let nextId = 1;
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+ajouterTrajet();
+
+// ── Trajet management ─────────────────────────────────────────────────────────
+function ajouterTrajet() {
+    const id = nextId++;
+    trajets.push({ id, distanceUnitaire: 0, distanceCalculee: false });
+
+    const el = document.createElement('div');
+    el.className = 'card no-print';
+    el.id = `card-${id}`;
+    el.innerHTML = buildTrajetHTML(id);
+    document.getElementById('trajets-container').appendChild(el);
+
+    rafraichirBoutonsSuppr();
+}
+
+function supprimerTrajet(id) {
+    trajets = trajets.filter(t => t.id !== id);
+    document.getElementById(`card-${id}`).remove();
+    rafraichirBoutonsSuppr();
+}
+
+function rafraichirBoutonsSuppr() {
+    document.querySelectorAll('.btn-suppr').forEach(b => {
+        b.style.display = trajets.length <= 1 ? 'none' : '';
+    });
+}
+
+function buildTrajetHTML(id) {
+    return `
+        <div class="card-header">
+            <input class="card-header-name" type="text" id="nom-${id}" value="Trajet ${id}" placeholder="Nom du trajet">
+            <span class="badge badge-pending" id="badge-${id}">Non calculé</span>
+            <button class="btn btn-danger-ghost btn-suppr" onclick="supprimerTrajet(${id})">✕ Retirer</button>
+        </div>
+        <div class="card-body">
+            <label>Adresse de départ</label>
+            <input type="text" id="dep-${id}" placeholder="Ex: 10 rue de la Paix, Paris">
+
+            <label>Adresse d'arrivée</label>
+            <input type="text" id="arr-${id}" placeholder="Ex: 5 avenue Victor Hugo, Lyon">
+
+            <div class="check-row">
+                <input type="checkbox" id="ar-${id}" checked>
+                <label for="ar-${id}">Aller-Retour</label>
+            </div>
+
+            <button class="btn btn-primary btn-block" onclick="calculerDistanceTrajet(${id})">
+                Calculer la distance du trajet
+            </button>
+            <div class="loading-msg" id="load-${id}">Recherche de l'itinéraire…</div>
+            <div class="dist-ok" id="distok-${id}">
+                Distance : <strong id="distval-${id}">–</strong> km (trajet simple)
+            </div>
+
+            <div class="grid-2" style="margin-top:.5rem">
+                <div>
+                    <label>Date de début</label>
+                    <input type="date" id="dd-${id}" onchange="recalcJours(${id})">
+                </div>
+                <div>
+                    <label>Date de fin</label>
+                    <input type="date" id="df-${id}" onchange="recalcJours(${id})">
+                </div>
+            </div>
+
+            <div class="check-row">
+                <input type="checkbox" id="sw-${id}" checked onchange="recalcJours(${id})">
+                <label for="sw-${id}">Exclure les week-ends (lun–ven)</label>
+            </div>
+
+            <label>Nombre de trajets (modifiable manuellement)</label>
+            <input type="number" id="nb-${id}" value="0" min="0">
+        </div>`;
+}
+
+// ── Weekday counter ───────────────────────────────────────────────────────────
+function recalcJours(id) {
+    const dd = document.getElementById(`dd-${id}`).value;
+    const df = document.getElementById(`df-${id}`).value;
+    const sw = document.getElementById(`sw-${id}`).checked;
+    if (!dd || !df) return;
+
+    const start = new Date(dd), end = new Date(df);
+    if (start > end) { document.getElementById(`nb-${id}`).value = 0; return; }
+
+    let count = 0, cur = new Date(start);
+    while (cur <= end) {
+        const d = cur.getDay();
+        if (!sw || (d !== 0 && d !== 6)) count++;
+        cur.setDate(cur.getDate() + 1);
+    }
+    document.getElementById(`nb-${id}`).value = count;
+}
+
+// ── Geocoding + routing ───────────────────────────────────────────────────────
+async function geocode(address) {
+    const r = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(address)}`
+    );
+    const data = await r.json();
+    if (!data.length) throw new Error(`Adresse introuvable : « ${address} »`);
+    return { lat: data[0].lat, lon: data[0].lon };
+}
+
+async function calculerDistanceTrajet(id) {
+    const dep = document.getElementById(`dep-${id}`).value.trim();
+    const arr = document.getElementById(`arr-${id}`).value.trim();
+    if (!dep || !arr) { alert('Saisissez les deux adresses.'); return; }
+
+    const load  = document.getElementById(`load-${id}`);
+    const ok    = document.getElementById(`distok-${id}`);
+    const badge = document.getElementById(`badge-${id}`);
+    const t     = trajets.find(t => t.id === id);
+
+    load.style.display = 'block';
+    ok.style.display   = 'none';
+    t.distanceCalculee = false;
+
+    try {
+        const c1 = await geocode(dep);
+        await new Promise(r => setTimeout(r, 500)); // respect Nominatim rate limit
+        const c2 = await geocode(arr);
+
+        const res  = await fetch(
+            `https://router.project-osrm.org/route/v1/driving/${c1.lon},${c1.lat};${c2.lon},${c2.lat}?overview=false`
+        );
+        const data = await res.json();
+        if (!data.routes?.length) throw new Error('Aucun itinéraire routier trouvé.');
+
+        t.distanceUnitaire = data.routes[0].distance / 1000;
+        t.distanceCalculee = true;
+
+        document.getElementById(`distval-${id}`).textContent = t.distanceUnitaire.toFixed(1);
+        ok.style.display  = 'block';
+        badge.textContent = t.distanceUnitaire.toFixed(1) + ' km/trajet';
+        badge.className   = 'badge badge-ok';
+    } catch (e) {
+        alert('Erreur : ' + e.message);
+        badge.textContent = 'Erreur';
+        badge.className   = 'badge badge-error';
+    } finally {
+        load.style.display = 'none';
+    }
+}
+
+// ── IK calculation ────────────────────────────────────────────────────────────
+function calculerIK() {
+    const cv    = parseInt(document.getElementById('cv').value);
+    const annee = parseInt(document.getElementById('annee').value);
+
+    // Sync mutable fields from DOM
+    trajets.forEach(t => {
+        t.nom        = document.getElementById(`nom-${t.id}`).value || `Trajet ${t.id}`;
+        t.allerRetour = document.getElementById(`ar-${t.id}`).checked;
+        t.nbTrajets  = parseInt(document.getElementById(`nb-${t.id}`).value) || 0;
+    });
+
+    const actifs  = trajets.filter(t => t.nbTrajets > 0);
+    if (!actifs.length) { alert('Aucun trajet avec un nombre de trajets > 0.'); return; }
+
+    const nonCalc = actifs.filter(t => !t.distanceCalculee);
+    if (nonCalc.length) {
+        alert(`Distance non calculée pour : ${nonCalc.map(t => t.nom).join(', ')}`);
+        return;
+    }
+
+    let totalKm = 0;
+    const rows = actifs.map(t => {
+        const distJour = t.distanceUnitaire * (t.allerRetour ? 2 : 1);
+        const kmTrajet = distJour * t.nbTrajets;
+        totalKm += kmTrajet;
+        return { nom: t.nom, distJour, nbTrajets: t.nbTrajets, kmTrajet };
+    });
+
+    const { montant, tranche } = appliquerBareme(totalKm, cv, annee);
+
+    document.getElementById('summary-tbody').innerHTML = rows.map(r => `
+        <tr>
+            <td>${escHtml(r.nom)}</td>
+            <td>${r.distJour.toFixed(1)} km</td>
+            <td>${r.nbTrajets}</td>
+            <td>${r.kmTrajet.toFixed(1)} km</td>
+        </tr>
+    `).join('');
+
+    const cvLabel = document.getElementById('cv').selectedOptions[0].text;
+    document.getElementById('total-km-cell').textContent = totalKm.toFixed(1) + ' km';
+    document.getElementById('montant-final').textContent =
+        montant.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+    document.getElementById('bareme-info').textContent =
+        `Barème ${annee} — ${cvLabel} — ${tranche}`;
+
+    document.getElementById('result-placeholder').style.display = 'none';
+    document.getElementById('result-content').style.display = 'block';
+    document.getElementById('btn-pdf').style.display = '';
+}
+
+// ── PDF export ────────────────────────────────────────────────────────────────
+function exportPDF() {
+    const cvLabel    = document.getElementById('cv').selectedOptions[0].text;
+    const anneeLabel = document.getElementById('annee').selectedOptions[0].text;
+    const today      = new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
+
+    document.getElementById('print-header').innerHTML = `
+        <div style="text-align:center; margin-bottom:1rem; padding-bottom:.75rem; border-bottom:2px solid #2563eb">
+            <h2 style="font-size:1.3rem; color:#2563eb; font-weight:800; margin-bottom:.25rem">
+                Indemnités Kilométriques
+            </h2>
+            <p style="color:#6b7280; font-size:.9rem">
+                Déclaration ${anneeLabel} &nbsp;·&nbsp; ${cvLabel} &nbsp;·&nbsp; Édité le ${today}
+            </p>
+        </div>
+    `;
+    window.print();
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function onAnneeChange() {
+    const annee = document.getElementById('annee').value;
+    document.getElementById('warn-annee').style.display = annee === '2026' ? '' : 'none';
+}
+
+function escHtml(s) {
+    return String(s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+</script>
+</body>
+</html>
