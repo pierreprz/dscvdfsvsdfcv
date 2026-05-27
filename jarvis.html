@@ -423,7 +423,7 @@ html,body{height:100%;overflow:hidden;background:var(--d);color:var(--t);font-fa
 <script>
 'use strict'
 
-// ── DATABASE ─────────────────────────────────────────────────────────────────
+// ── DATABASE ────────────────────────────────────────────────────
 const DB={
   get:k=>JSON.parse(localStorage.getItem(k)||'null'),
   set:(k,v)=>localStorage.setItem(k,JSON.stringify(v)),
@@ -447,7 +447,7 @@ const DB={
   delObjectif(id){DB.set('j_obj',DB.objectifs().filter(x=>x.id!==id))},
 }
 
-// ── UTILS ─────────────────────────────────────────────────────────────────────
+// ── UTILS ──────────────────────────────────────────────────────
 function norm(s){return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim()}
 function showNotif(msg,col){
   const n=document.createElement('div');n.className='notif'
@@ -456,7 +456,7 @@ function showNotif(msg,col){
 }
 function cap(s){return s?s.charAt(0).toUpperCase()+s.slice(1):''}
 
-// ── CONTACTS ──────────────────────────────────────────────────────────────────
+// ── CONTACTS ─────────────────────────────────────────────────
 function getContacts(){
   const s=DB.settings()
   const map={'moi':s.myMail||'pierre.perrez22@gmail.com','pierre':s.myMail||'pierre.perrez22@gmail.com','thomas':s.thomasMail||'thomas.noble05@orange.fr'}
@@ -469,7 +469,7 @@ function findContact(m){
   return null
 }
 
-// ── CSV / EXCEL EXPORT (semicolons for French Excel) ──────────────────────────
+// ── CSV / EXCEL EXPORT (semicolons for French Excel) ──────────────────────
 function generateRecapText(){
   const students=DB.students(),grades=DB.grades(),absences=DB.absences(),materials=DB.materials()
   const date=new Date().toLocaleDateString('fr-FR')
@@ -556,7 +556,7 @@ function sendRecap(toEmail,toName){
   showNotif('Fichier CSV telecharge + email ouvert pour '+toName)
 }
 
-// ── UNLOCK ────────────────────────────────────────────────────────────────────
+// ── UNLOCK ─────────────────────────────────────────────────
 let unlockRec=null
 function startUnlock(){
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition
@@ -617,7 +617,7 @@ function unlockFail(){
 function setLS(t){document.getElementById('lStatus').textContent=t}
 function lockSys(){stopMic();window.speechSynthesis&&window.speechSynthesis.cancel();document.getElementById('app').style.display='none';document.getElementById('lock').style.display='flex';setLS('');document.getElementById('lStatus').style.color='var(--c)';voiceState=null;updateVSBar()}
 
-// ── TTS ───────────────────────────────────────────────────────────────────────
+// ── TTS ───────────────────────────────────────────────────────
 function speak(text){
   if(!window.speechSynthesis)return
   window.speechSynthesis.cancel()
@@ -631,7 +631,7 @@ function speak(text){
 }
 if(window.speechSynthesis)window.speechSynthesis.onvoiceschanged=()=>window.speechSynthesis.getVoices()
 
-// ── STATE ─────────────────────────────────────────────────────────────────────
+// ── STATE ────────────────────────────────────────────────────
 let voiceState=null
 let triFilter='all'
 let stuTri='all'
@@ -645,7 +645,7 @@ function setTriFilter(t){
   renderStats()
 }
 
-// ── VOICE STATE MACHINE (ajout eleve vocal) ───────────────────────────────────
+// ── VOICE STATE MACHINE (ajout eleve vocal) ──────────────────────────
 function updateVSBar(){
   const bar=document.getElementById('vsBar'),txt=document.getElementById('vsBarTxt')
   if(!voiceState){bar.classList.remove('on');return}
@@ -654,7 +654,7 @@ function updateVSBar(){
   txt.textContent=labels[voiceState.step]||''
 }
 
-// ── CHAT ──────────────────────────────────────────────────────────────────────
+// ── CHAT ────────────────────────────────────────────────────
 let chatHist=[],micRec=null,micOn=false
 function addMsg(role,txt){
   const box=document.getElementById('msgs'),d=document.createElement('div')
@@ -720,7 +720,7 @@ async function callOllama(msg,url,model){
   const d=await r.json();return d.message?.content||null
 }
 
-// ── COMMANDES VOCALES NATURELLES ─────────────────────────────────────────────
+// ── COMMANDES VOCALES NATURELLES ──────────────────────────────────
 function parseNaturalCommand(m, students){
   let found=null
   for(const s of students){
@@ -773,7 +773,7 @@ function parseNaturalCommand(m, students){
   return null
 }
 
-// ── JARVIS AI ─────────────────────────────────────────────────────────────────
+// ── JARVIS AI ──────────────────────────────────────────────────
 function jarvisRespond(msg){
   const m=norm(msg),students=DB.students(),absences=DB.absences(),grades=DB.grades(),materials=DB.materials()
   const getStats=s=>{
@@ -956,7 +956,7 @@ function bulletinComment(s,st){
   return c
 }
 
-// ── MICRO ─────────────────────────────────────────────────────────────────────
+// ── MICRO ───────────────────────────────────────────────────
 function toggleMic(){micOn?stopMic():startMic()}
 function startMic(){
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition
@@ -971,7 +971,7 @@ function startMic(){
 function stopMic(){micOn=false;document.getElementById('btnMic').classList.remove('on');document.getElementById('vviz').style.display='none';if(micRec){try{micRec.stop()}catch(e){}micRec=null}}
 document.addEventListener('keydown',e=>{if(e.code==='Space'&&e.target.tagName!=='INPUT'&&e.target.tagName!=='TEXTAREA'){e.preventDefault();toggleMic()}})
 
-// ── TABS ──────────────────────────────────────────────────────────────────────
+// ── TABS ────────────────────────────────────────────────────────
 function showTab(name){
   ['chat','students','stats'].forEach(n=>{
     document.getElementById('t-'+n).classList.toggle('on',n===name)
@@ -981,7 +981,7 @@ function showTab(name){
   if(name==='stats')renderStats()
 }
 
-// ── STUDENTS UI ───────────────────────────────────────────────────────────────
+// ── STUDENTS UI ───────────────────────────────────────────────
 let selId=null
 function renderStudents(){
   const list=DB.students(),srch=norm(document.getElementById('srch').value||''),fcls=document.getElementById('fCls').value
@@ -1079,7 +1079,7 @@ function selectStu(id,t){
     +'</div>'
 }
 
-// ── CRUD ──────────────────────────────────────────────────────────────────────
+// ── CRUD ────────────────────────────────────────────────────
 function openAddStu(){document.getElementById('mStuTitle').textContent='Ajouter un eleve';['sId','sP','sN','sCl','sD','sNo'].forEach(i=>document.getElementById(i).value='');openModal('moStu')}
 function openEditStu(id){const s=DB.students().find(x=>x.id===id);if(!s)return;document.getElementById('mStuTitle').textContent='Modifier';document.getElementById('sId').value=s.id;document.getElementById('sP').value=s.prenom;document.getElementById('sN').value=s.nom;document.getElementById('sCl').value=s.classe;document.getElementById('sD').value=s.dateNaissance||'';document.getElementById('sNo').value=s.notes||'';openModal('moStu')}
 function saveStu(){const id=document.getElementById('sId').value,s={prenom:document.getElementById('sP').value,nom:document.getElementById('sN').value,classe:document.getElementById('sCl').value,dateNaissance:document.getElementById('sD').value||null,notes:document.getElementById('sNo').value||null};if(!s.prenom||!s.nom||!s.classe){alert('Prenom, nom et classe requis.');return};if(id){s.id=parseInt(id);DB.updStudent(s)}else DB.addStudent(s);closeModal('moStu');renderStudents();if(id)selectStu(parseInt(id))}
@@ -1097,7 +1097,7 @@ function openAddMat(sid){const tri=DB.settings().trimestre||'T1';document.getEle
 function saveMat(){const sid=parseInt(document.getElementById('matSid').value);DB.addMaterial({sid,date:document.getElementById('matD').value,tri:document.getElementById('matTri').value,commentaire:document.getElementById('matC').value||null});closeModal('moMat');selectStu(sid);renderStudents()}
 function delMat(id){if(!confirm('Supprimer cet oubli ?'))return;DB.delMaterial(id);if(selId){selectStu(selId);renderStudents()}}
 
-// ── STATS ─────────────────────────────────────────────────────────────────────
+// ── STATS ────────────────────────────────────────────────────
 function renderStats(){
   const students=DB.students(),allGrades=DB.grades(),allAbsences=DB.absences(),allMaterials=DB.materials(),w=document.getElementById('statWrap')
   if(!students.length){w.innerHTML='<p style="color:var(--td);padding:22px">Ajoutez des eleves pour voir les stats.</p>';return}
@@ -1157,7 +1157,7 @@ function renderStats(){
     +'</div>'
 }
 
-// ── SETTINGS ──────────────────────────────────────────────────────────────────
+// ── SETTINGS ─────────────────────────────────────────────────
 function openSettingsModal(){
   const s=DB.settings()
   document.getElementById('setCd').value=s.code||'jarvis activation'
@@ -1183,12 +1183,12 @@ function saveSet(){
   addMsg('j','Reglages enregistres avec succes. Trimestre actuel : '+DB.settings().trimestre+'.')
 }
 
-// ── MODALS ────────────────────────────────────────────────────────────────────
+// ── MODALS ─────────────────────────────────────────────────
 function openModal(id){document.getElementById(id).classList.add('open')}
 function closeModal(id){document.getElementById(id).classList.remove('open')}
 document.addEventListener('click',e=>{if(e.target.classList.contains('mo'))e.target.classList.remove('open')})
 
-// ── OBJECTIFS ────────────────────────────────────────────────────────────────
+// ── OBJECTIFS ───────────────────────────────────────────────
 function openObjModal(sid){
   document.getElementById('objSid').value=sid
   document.getElementById('objAct').value=''
@@ -1209,7 +1209,7 @@ function saveObj(){
   showNotif('Objectif '+objectif+'/20 fixe pour '+activite,'var(--w)')
 }
 
-// ── IMPRESSION PDF ────────────────────────────────────────────────────────────
+// ── IMPRESSION PDF ─────────────────────────────────────────────
 function printStudentSheet(id){
   const s=DB.students().find(x=>x.id===id);if(!s)return
   const abs=DB.absences().filter(a=>a.sid===id)
@@ -1279,7 +1279,7 @@ function printClassDashboard(){
   w.document.write(html);w.document.close();setTimeout(()=>{w.print()},400)
 }
 
-// ── BULLETINS EN MASSE ───────────────────────────────────────────────────────
+// ── BULLETINS EN MASSE ──────────────────────────────────────
 function openBulletinsModal(){
   const classes=[...new Set(DB.students().map(s=>s.classe))].sort()
   if(!classes.length){showNotif('Ajoutez des eleves avant.','var(--r)');return}
@@ -1355,7 +1355,7 @@ function exportBulletins(){
   setTimeout(()=>URL.revokeObjectURL(url),1000)
 }
 
-// ── ALERTS ────────────────────────────────────────────────────────────────────
+// ── ALERTS ───────────────────────────────────────────────────
 function getAlerts(){
   const alerts=[]
   DB.students().forEach(s=>{
@@ -1375,7 +1375,7 @@ function getAlerts(){
   return alerts
 }
 
-// ── SVG CHART ────────────────────────────────────────────────────────────────
+// ── SVG CHART ───────────────────────────────────────────────
 function drawGradeChart(grades){
   if(grades.length<2)return''
   const sorted=[...grades].sort((a,b)=>new Date(a.date)-new Date(b.date))
@@ -1416,7 +1416,7 @@ function drawGradeChart(grades){
     +'</svg></div>'
 }
 
-// ── SESSION MANAGEMENT ────────────────────────────────────────────────────────
+// ── SESSION MANAGEMENT ─────────────────────────────────────
 let activeSession=null
 
 function openNewSessionModal(){
