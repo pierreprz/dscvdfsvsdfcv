@@ -16,6 +16,11 @@ html,body{height:100%;overflow:hidden;background:var(--d);color:var(--t);font-fa
 .lock-title{font-family:var(--fn);font-size:3.2rem;font-weight:900;color:var(--c);text-shadow:0 0 30px var(--c),0 0 60px var(--cd);letter-spacing:.5rem}
 .lock-sub{font-family:var(--fn);font-size:.7rem;color:var(--td);letter-spacing:.3rem}
 .lock-hint{color:var(--td);font-size:.9rem;margin-top:8px}
+.lock-input-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:4px;width:100%}
+.lock-input{background:rgba(0,212,255,.07);border:1px solid rgba(0,212,255,.3);color:var(--t);font-family:var(--fb);font-size:.95rem;padding:10px 18px;border-radius:4px;outline:none;width:260px;text-align:center;letter-spacing:.1rem}
+.lock-input:focus{border-color:var(--c);box-shadow:0 0 12px var(--cg)}
+.lock-input::placeholder{color:var(--td);letter-spacing:normal}
+.lock-sep{color:var(--td);font-size:.8rem;letter-spacing:.15rem}
 .arc{width:110px;height:110px;position:relative;display:flex;align-items:center;justify-content:center;margin-bottom:6px}
 .arc-r{position:absolute;border-radius:50%;border:2px solid var(--c);box-shadow:0 0 10px var(--c),inset 0 0 10px var(--cg)}
 .arc-r:nth-child(1){width:100%;height:100%;animation:spin 8s linear infinite;border-style:dashed}
@@ -154,6 +159,11 @@ html,body{height:100%;overflow:hidden;background:var(--d);color:var(--t);font-fa
       <span>&#127908;</span><span id="unlockLabel">Activer la reconnaissance vocale</span>
     </button>
     <div id="lStatus"></div>
+    <div class="lock-input-wrap">
+      <span class="lock-sep">— ou tapez le code —</span>
+      <input type="password" id="codeInput" class="lock-input" placeholder="Code secret..." onkeydown="if(event.key==='Enter')checkTypedCode()" autocomplete="off">
+      <button class="btn-unlock" onclick="checkTypedCode()" style="padding:10px 24px;font-size:.75rem">&#128275; Deverrouiller</button>
+    </div>
     <div class="waves" id="lockWave"><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div></div>
   </div>
   <div class="corners"><div class="cn tl"></div><div class="cn tr"></div><div class="cn bl"></div><div class="cn br"></div></div>
@@ -274,7 +284,7 @@ const DB={
   delGrade(id){DB.set('j_grd',DB.grades().filter(x=>x.id!==id))},
 }
 
-// ── CONTACTS ─────────────────────────────────────────────
+// ── CONTACTS ────────────────────────────────────────────────────────────
 function getContacts(){
   const s=DB.settings()
   const map={'moi':s.myMail||'pierre.perrez22@gmail.com','pierre':s.myMail||'pierre.perrez22@gmail.com','thomas':s.thomasMail||'thomas.noble05@orange.fr'}
@@ -287,7 +297,7 @@ function findContact(m){
   return null
 }
 
-// ── EXCEL / CSV EXPORT ────────────────────────────────────
+// ── EXCEL / CSV EXPORT ────────────────────────────────────────────────
 function generateRecapText(){
   const students=DB.students(),grades=DB.grades(),absences=DB.absences()
   const date=new Date().toLocaleDateString('fr-FR')
@@ -298,23 +308,22 @@ function generateRecapText(){
     const cs=students.filter(s=>s.classe===cl)
     const moys=cs.map(s=>{const sg=grades.filter(g=>g.sid===s.id);return sg.length?sg.reduce((a,g)=>a+g.note/g.noteMax*20,0)/sg.length:null}).filter(x=>x!==null)
     const moyC=moys.length?(moys.reduce((a,b)=>a+b,0)/moys.length).toFixed(1):null
-    t+='CLASSE: '+cl+(moyC?' | Moyenne: '+moyC+'/20':'')+'\n'+'-'.repeat(40)+'\n'
+    t+='CLASSE: '+cl+(moyC?' | Moyenne: '+moyC+'/20':'')+'\'n'+'-'.repeat(40)+'\'n'
     cs.forEach(s=>{
       const sg=grades.filter(g=>g.sid===s.id),sa=absences.filter(a=>a.sid===s.id)
       const moy=sg.length?(sg.reduce((a,g)=>a+g.note/g.noteMax*20,0)/sg.length).toFixed(1):'--'
-      t+='  '+s.prenom+' '+s.nom+' | Moy: '+moy+'/20 | Absences: '+sa.length+'\n'
-      sg.forEach(g=>{t+='    - '+g.activite+': '+g.note+'/'+g.noteMax+' ('+( g.note/g.noteMax*20).toFixed(1)+'/20)'+(g.commentaire?' | '+g.commentaire:'')+'\n'})
+      t+='  '+s.prenom+' '+s.nom+' | Moy: '+moy+'/20 | Absences: '+sa.length+'\'n'
+      sg.forEach(g=>{t+='    - '+g.activite+': '+g.note+'/'+g.noteMax+' ('+(g.note/g.noteMax*20).toFixed(1)+'/20)'+(g.commentaire?' | '+g.commentaire:'')+'\'n'})
     })
-    t+='\n'
+    t+='\'n'
   })
-  t+='---\nEnvoye automatiquement par Jarvis EPS\n'
+  t+='---\'nEnvoye automatiquement par Jarvis EPS\'n'
   return t
 }
 
 function generateAndDownloadCSV(){
   const students=DB.students(),grades=DB.grades(),absences=DB.absences()
   const date=new Date().toISOString().split('T')[0]
-  // Feuille 1 : recap eleves
   let csv='RECAPITULATIF EPS - '+new Date().toLocaleDateString('fr-FR')+'\n\n'
   csv+='Prenom,Nom,Classe,Moyenne /20,Nb Notes,Total Absences,Justifiees,Non Justifiees\n'
   students.forEach(s=>{
@@ -323,14 +332,12 @@ function generateAndDownloadCSV(){
     const aj=sa.filter(a=>a.justifiee).length
     csv+=s.prenom+','+s.nom+','+s.classe+','+moy+','+sg.length+','+sa.length+','+aj+','+(sa.length-aj)+'\n'
   })
-  // Feuille 2 : detail notes
   csv+='\nDETAIL DES NOTES\nPrenom,Nom,Classe,Activite,Note,Note Max,/20,Date,Commentaire\n'
   students.forEach(s=>{
     grades.filter(g=>g.sid===s.id).forEach(g=>{
       csv+=s.prenom+','+s.nom+','+s.classe+','+g.activite+','+g.note+','+g.noteMax+','+(g.note/g.noteMax*20).toFixed(2)+','+g.date+','+(g.commentaire||'')+'\n'
     })
   })
-  // Feuille 3 : absences
   csv+='\nDETAIL DES ABSENCES\nPrenom,Nom,Classe,Date,Justifiee,Commentaire\n'
   students.forEach(s=>{
     absences.filter(a=>a.sid===s.id).forEach(a=>{
@@ -362,9 +369,9 @@ function showNotif(msg){
   document.body.appendChild(n);setTimeout(()=>n.remove(),4000)
 }
 
-// ── UNLOCK ────────────────────────────────────────────────
+// ── UNLOCK ────────────────────────────────────────────────────────────
 let unlockRec=null
-function norm(s){return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').trim()}
+function norm(s){return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim()}
 function startUnlock(){
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition
   if(!SR){setLS('Utilisez Google Chrome.');return}
@@ -373,13 +380,40 @@ function startUnlock(){
   btn.classList.add('listening');lbl.textContent='Ecoute en cours...';wv.style.display='flex';setLS('Prononcez votre code...')
   unlockRec.onresult=e=>{
     const alts=Array.from(e.results[0]).map(r=>norm(r.transcript))
-    setLS('Analyse: '+alts[0])
+    setLS('Entendu: '+alts[0])
     const code=norm(DB.settings().code||'jarvis activation')
-    if(alts.some(a=>a.includes(code)||code.includes(a)))unlockOk();else unlockFail()
+    const codeWords=code.split(' ').filter(w=>w.length>2)
+    const match=alts.some(a=>{
+      if(a===code)return true
+      if(a.includes(code)||code.includes(a))return true
+      if(codeWords.length>0&&codeWords.every(w=>a.includes(w)))return true
+      return false
+    })
+    if(match)unlockOk();else unlockFail()
   }
-  unlockRec.onerror=unlockFail
+  unlockRec.onerror=e=>{
+    setLS('Erreur micro: '+e.error+'. Tapez le code ci-dessous.')
+    document.getElementById('lStatus').style.color='var(--w)'
+    unlockFail()
+  }
   unlockRec.onend=()=>{btn.classList.remove('listening');lbl.textContent='Activer la reconnaissance vocale';wv.style.display='none'}
   unlockRec.start()
+}
+function checkTypedCode(){
+  const input=document.getElementById('codeInput')
+  const typed=norm(input.value||'')
+  const code=norm(DB.settings().code||'jarvis activation')
+  if(typed===code){
+    input.value=''
+    setLS('Code correct. Acces autorise.')
+    unlockOk()
+  }else{
+    setLS('Code incorrect. Reessayez.')
+    document.getElementById('lStatus').style.color='var(--r)'
+    input.value=''
+    speak('Code incorrect.')
+    setTimeout(()=>{setLS('');document.getElementById('lStatus').style.color='var(--c)'},3000)
+  }
 }
 function unlockOk(){
   setLS('Acces autorise. Bonjour !')
@@ -401,7 +435,7 @@ function unlockFail(){
 function setLS(t){document.getElementById('lStatus').textContent=t}
 function lockSys(){stopMic();window.speechSynthesis&&window.speechSynthesis.cancel();document.getElementById('app').style.display='none';document.getElementById('lock').style.display='flex';setLS('');document.getElementById('lStatus').style.color='var(--c)'}
 
-// ── TTS ───────────────────────────────────────────────────
+// ── TTS ───────────────────────────────────────────────────────────────
 function speak(text){
   if(!window.speechSynthesis)return
   window.speechSynthesis.cancel()
@@ -414,7 +448,7 @@ function speak(text){
 }
 if(window.speechSynthesis)window.speechSynthesis.onvoiceschanged=()=>window.speechSynthesis.getVoices()
 
-// ── CHAT ──────────────────────────────────────────────────
+// ── CHAT ───────────────────────────────────────────────────────────────
 let chatHist=[],micRec=null,micOn=false
 function addMsg(role,txt){
   const box=document.getElementById('msgs'),d=document.createElement('div')
@@ -443,40 +477,39 @@ async function callOllama(msg,url,model){
   const d=await r.json();return d.message?.content||null
 }
 
-// ── JARVIS AI ─────────────────────────────────────────────
+// ── JARVIS AI ───────────────────────────────────────────────────────────────
 function jarvisRespond(msg){
   const m=norm(msg),students=DB.students(),absences=DB.absences(),grades=DB.grades()
   const getStats=s=>{const sa=absences.filter(a=>a.sid===s.id),sg=grades.filter(g=>g.sid===s.id);return{absences:sa,grades:sg,moy:sg.length?sg.reduce((a,g)=>a+g.note/g.noteMax*20,0)/sg.length:null}}
 
-  // ━━━ COMMANDES EMAIL / RECAP ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // ━━━ COMMANDES EMAIL / RECAP ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   const isRecapCmd = /(recapitulatif|recap|bilan|synthese)/.test(m)
   const isMailCmd  = /(envoie|envoi|envoyer|mail|email|envoyer)/.test(m)
   if(isRecapCmd || (isMailCmd && /(thomas|moi|pierre|mail|email)/.test(m))){
-    // Cherche un contact mentionné
     const contact = findContact(m)
     if(contact){
       sendRecap(contact.email, contact.name)
       return 'Bien sur. Je genere le fichier Excel et prepare votre email pour '+contact.name+'. Votre messagerie va s ouvrir avec l email pret a envoyer. Il vous suffit de cliquer sur Envoyer !'
     }
-    // Par defaut : envoyer a moi
     const myMail=DB.settings().myMail||'pierre.perrez22@gmail.com'
     sendRecap(myMail,'vous')
     return 'Tres bien. Je genere votre fichier Excel et prepare l email. Votre messagerie va s ouvrir dans quelques secondes. Cliquez sur Envoyer quand vous etes pret !'
   }
 
-  // ━━━ ELEVE MENTIONNE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // ━━━ ELEVE MENTIONNE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   for(const s of students){
     const fn=norm(s.prenom),ln=norm(s.nom)
     if(m.includes(fn)||m.includes(ln)){
       const st=getStats(s)
       if(/(commentaire|bulletin|appreciation|redige)/.test(m))return bulletinComment(s,st)
       if(/(absence|absent)/.test(m)){if(!st.absences.length)return s.prenom+' '+s.nom+' n a aucune absence.';const j=st.absences.filter(a=>a.justifiee).length;return s.prenom+' '+s.nom+' a '+st.absences.length+' absence(s), dont '+j+' justifiee(s).'}
-      if(/(note|moyenne|performance|resultat)/.test(m)){if(!st.grades.length)return 'Aucune note pour '+s.prenom+' '+s.nom+'.';const acts=st.grades.map(g=>g.activite+': '+g.note+'/'+g.noteMax).join(', ');return s.prenom+' '+s.nom+' : moyenne '+st.moy.toFixed(1)+'/20. '+acts+'.'}
+      if(/(note|moyenne|performance|resultat)/.test(m)){if(!st.grades.length)return 'Aucune note pour '+s.prenom+' '+s.nom+'.';const acts=st.grades.map(g=>g.activite+': '+g.note+'/'+g.noteMax).join(', ');return s.prenom+' '+s.nom+' : moyenne '+st.moy.toFixed(1)+'/20. '+acts+'.'
+      }
       return studentReport(s,st)
     }
   }
 
-  // ━━━ CLASSE MENTIONNEE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // ━━━ CLASSE MENTIONNEE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   const classes=[...new Set(students.map(s=>s.classe))]
   for(const cl of classes){
     if(m.includes(norm(cl))){
@@ -487,7 +520,7 @@ function jarvisRespond(msg){
     }
   }
 
-  // ━━━ MOTS-CLES GENERAUX ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // ━━━ MOTS-CLES GENERAUX ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   if(/(bonjour|salut|hello|bonsoir)/.test(m))return['Bonjour ! Tous mes systemes sont operationnels. Comment puis-je vous aider ?','Bonsoir ! Ravi de vous retrouver.'][Math.floor(Math.random()*2)]
   if(/(comment tu vas|ca va|tu vas bien)/.test(m))return'Tous mes systemes fonctionnent parfaitement. Et vous ?'
   if(/(merci)/.test(m))return'Avec plaisir. C est pour cela que je suis la.'
@@ -498,14 +531,14 @@ function jarvisRespond(msg){
   }
   if(/(difficulte|note basse|probleme)/.test(m)){
     const diff=students.map(s=>{const sg=grades.filter(g=>g.sid===s.id);if(!sg.length)return null;const moy=sg.reduce((a,g)=>a+g.note/g.noteMax*20,0)/sg.length;return moy<10?{s,moy}:null}).filter(Boolean)
-    return diff.length?'En difficulte : '+diff.map(x=>x.s.prenom+' '+x.s.nom+' ('+x.moy.toFixed(1)+'/20)').join(', ').':'Aucun eleve sous 10/20.'
+    return diff.length?'En difficulte : '+diff.map(x=>x.s.prenom+' '+x.s.nom+' ('+x.moy.toFixed(1)+'/20)').join(', ')+'.' :'Aucun eleve sous 10/20.'
   }
   if(/(meilleur|top|champion|premier)/.test(m)){
     const ranked=students.map(s=>{const sg=grades.filter(g=>g.sid===s.id);return sg.length?{s,moy:sg.reduce((a,g)=>a+g.note/g.noteMax*20,0)/sg.length}:null}).filter(Boolean).sort((a,b)=>b.moy-a.moy)
     return ranked.length?'Meilleurs : '+ranked.slice(0,3).map((x,i)=>(i+1)+'. '+x.s.prenom+' '+x.s.nom+' ('+x.moy.toFixed(1)+'/20)').join(', ')+'.' :'Aucune note.'
   }
-  if(/(combien|nombre|effectif)/.test(m)){if(!students.length)return'Aucun eleve.';const cls=[...new Set(students.map(s=>s.classe))];return'Vous avez '+students.length+' eleve(s) en '+cls.length+' classe(s) : '+cls.join(', ')+'.';}
-  if(/(heure|date|aujourd)/.test(m)){const now=new Date();return'Il est '+now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})+' le '+now.toLocaleDateString('fr-FR')+'.';}
+  if(/(combien|nombre|effectif)/.test(m)){if(!students.length)return'Aucun eleve.';const cls=[...new Set(students.map(s=>s.classe))];return'Vous avez '+students.length+' eleve(s) en '+cls.length+' classe(s) : '+cls.join(', ')+'.'}
+  if(/(heure|date|aujourd)/.test(m)){const now=new Date();return'Il est '+now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})+' le '+now.toLocaleDateString('fr-FR')+'.'}
   if(/(aide|help|que peux|commande)/.test(m))return'Je peux : informer sur un eleve, les stats d une classe, les absences, generer des commentaires de bulletin, et envoyer un recapitulatif par email. Dites "envoie moi un recapitulatif" !'
   if(!students.length)return'Aucun eleve enregistre. Allez dans l onglet Eleves pour commencer.'
   return'Je suis a votre service. Demandez-moi des infos sur un eleve, une classe, ou dites "envoie moi un recapitulatif" !'
@@ -514,16 +547,16 @@ function jarvisRespond(msg){
 function studentReport(s,st){let r=s.prenom+' '+s.nom+', '+s.classe+'. ';r+=st.moy!==null?'Moyenne : '+st.moy.toFixed(1)+'/20. ':'Pas encore de note. ';if(st.absences.length){const j=st.absences.filter(a=>a.justifiee).length;r+=st.absences.length+' absence(s) ('+j+' justifiee(s)). '}else r+='Aucune absence. ';if(st.grades.length)r+='Activites : '+[...new Set(st.grades.map(g=>g.activite))].join(', ')+'.';return r}
 function bulletinComment(s,st){const p=s.prenom,moy=st.moy,abs=st.absences.length;let c;if(moy===null)c=p+' participe aux cours d EPS.';else if(moy>=16)c=p+' fait preuve d un niveau excellent. Felicitations !';else if(moy>=13)c=p+' presente de bons resultats ('+moy.toFixed(1)+'/20). Engagement satisfaisant.';else if(moy>=10)c=p+' atteint les objectifs ('+moy.toFixed(1)+'/20). Des efforts amelioreraient ses performances.';else if(moy>=7)c=p+' doit s investir davantage ('+moy.toFixed(1)+'/20). Travail regulier necessaire.';else c='Resultats insuffisants ('+moy.toFixed(1)+'/20). Travail serieux indispensable.';if(abs>5)c+=' Absences repetees ('+abs+') nuisent a la progression.';return c}
 
-// ── MICRO ─────────────────────────────────────────────────
+// ── MICRO ───────────────────────────────────────────────────────────────
 function toggleMic(){micOn?stopMic():startMic()}
 function startMic(){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){addMsg('j','Utilisez Chrome.');return};micRec=new SR();micRec.lang='fr-FR';micRec.interimResults=false;micRec.onstart=()=>{micOn=true;document.getElementById('btnMic').classList.add('on');document.getElementById('vviz').style.display='flex'};micRec.onresult=e=>{document.getElementById('ci').value=e.results[0][0].transcript;stopMic();send()};micRec.onerror=micRec.onend=stopMic;window.speechSynthesis&&window.speechSynthesis.cancel();micRec.start()}
 function stopMic(){micOn=false;document.getElementById('btnMic').classList.remove('on');document.getElementById('vviz').style.display='none';if(micRec){try{micRec.stop()}catch(e){};micRec=null}}
 document.addEventListener('keydown',e=>{if(e.code==='Space'&&e.target.tagName!=='INPUT'&&e.target.tagName!=='TEXTAREA'){e.preventDefault();toggleMic()}})
 
-// ── TABS ──────────────────────────────────────────────────
+// ── TABS ───────────────────────────────────────────────────────────────
 function showTab(name){['chat','students','stats'].forEach(n=>{document.getElementById('t-'+n).classList.toggle('on',n===name);document.getElementById('v-'+n).style.display=n===name?'':'none'});if(name==='students')renderStudents();if(name==='stats')renderStats()}
 
-// ── STUDENTS UI ───────────────────────────────────────────
+// ── STUDENTS UI ───────────────────────────────────────────────────────────────
 let selId=null
 function renderStudents(){
   const list=DB.students(),srch=norm(document.getElementById('srch').value||''),fcls=document.getElementById('fCls').value
@@ -547,7 +580,7 @@ function selectStu(id){
   document.getElementById('det').innerHTML=`<div class="det"><div class="det-hdr"><div><div class="det-name">${s.prenom} ${s.nom}</div><div class="det-cls">${s.classe}${s.dateNaissance?' - Ne(e) le '+s.dateNaissance:''}</div>${s.notes?`<div style="font-size:.78rem;color:var(--td);margin-top:5px">${s.notes}</div>`:''}</div><div class="det-acts"><button class="bs e" onclick="openEditStu(${s.id})">Modifier</button><button class="bs d" onclick="delStu(${s.id})">Supprimer</button></div></div><div class="sc"><div class="scard"><div class="sv ${moyC}">${moyS}</div><div class="sl">MOYENNE /20</div></div><div class="scard"><div class="sv ${abs.length>5?'r':''}">${abs.length}</div><div class="sl">ABSENCES</div></div><div class="scard"><div class="sv ${absIj>0?'r':'g'}">${absIj}</div><div class="sl">NON JUSTIF.</div></div></div><div class="sec">NOTES <button class="bs e" onclick="openAddGr(${s.id})">+ Note</button></div>${grHtml}<div class="sec">ABSENCES <button class="bs e" onclick="openAddAbs(${s.id})">+ Absence</button></div>${abHtml}</div>`
 }
 
-// ── CRUD ──────────────────────────────────────────────────
+// ── CRUD ───────────────────────────────────────────────────────────────
 function openAddStu(){document.getElementById('mStuTitle').textContent='Ajouter un eleve';['sId','sP','sN','sCl','sD','sNo'].forEach(id=>document.getElementById(id).value='');openModal('moStu')}
 function openEditStu(id){const s=DB.students().find(x=>x.id===id);if(!s)return;document.getElementById('mStuTitle').textContent='Modifier';document.getElementById('sId').value=s.id;document.getElementById('sP').value=s.prenom;document.getElementById('sN').value=s.nom;document.getElementById('sCl').value=s.classe;document.getElementById('sD').value=s.dateNaissance||'';document.getElementById('sNo').value=s.notes||'';openModal('moStu')}
 function saveStu(){const id=document.getElementById('sId').value,s={prenom:document.getElementById('sP').value,nom:document.getElementById('sN').value,classe:document.getElementById('sCl').value,dateNaissance:document.getElementById('sD').value||null,notes:document.getElementById('sNo').value||null};if(!s.prenom||!s.nom||!s.classe){alert('Prenom, nom et classe requis.');return};if(id){s.id=parseInt(id);DB.updStudent(s)}else DB.addStudent(s);closeModal('moStu');renderStudents();if(id)selectStu(parseInt(id))}
@@ -559,7 +592,7 @@ function openAddAbs(sid){document.getElementById('aSid').value=sid;document.getE
 function saveAbs(){const sid=parseInt(document.getElementById('aSid').value);DB.addAbsence({sid,date:document.getElementById('aD').value,justifiee:document.getElementById('aJ').checked,commentaire:document.getElementById('aC').value||null});closeModal('moAbs');selectStu(sid);renderStudents()}
 function delAbs(id){if(!confirm('Supprimer ?'))return;DB.delAbsence(id);if(selId){selectStu(selId);renderStudents()}}
 
-// ── STATS ─────────────────────────────────────────────────
+// ── STATS ───────────────────────────────────────────────────────────────
 function renderStats(){
   const students=DB.students(),absences=DB.absences(),grades=DB.grades(),w=document.getElementById('statWrap')
   if(!students.length){w.innerHTML='<p style="color:var(--td);padding:22px">Ajoutez des eleves pour voir les stats.</p>';return}
@@ -568,15 +601,15 @@ function renderStats(){
   const withG=students.map(s=>{const sg=grades.filter(g=>g.sid===s.id);return sg.length?{s,moy:sg.reduce((a,g)=>a+g.note/g.noteMax*20,0)/sg.length}:null}).filter(Boolean)
   const top=[...withG].sort((a,b)=>b.moy-a.moy).slice(0,3),flop=[...withG].sort((a,b)=>a.moy-b.moy).slice(0,3)
   const absRank=students.map(s=>({s,n:absences.filter(a=>a.sid===s.id).length})).filter(x=>x.n>0).sort((a,b)=>b.n-a.n).slice(0,5)
-  w.innerHTML=`<h2 style="font-family:var(--fn);font-size:.82rem;color:var(--c);letter-spacing:.15rem;margin-bottom:18px">TABLEAU DE BORD - ${new Date().toLocaleDateString('fr-FR')}</h2><div class="stat-grid">${clCards}${top.length?'<div class="sc2"><div class="sc2-t">TOP PERFORMANCES</div>'+top.map((x,i)=>'<div class="sr"><span class="sk">'+(i+1)+'. '+x.s.prenom+' '+x.s.nom+'</span><span class="sv2" style="color:var(--g)">'+x.moy.toFixed(1)+'/20</span></div>').join('')+'</div>':''}${flop.length?'<div class="sc2"><div class="sc2-t">A SURVEILLER</div>'+flop.map(x=>'<div class="sr"><span class="sk">'+x.s.prenom+' '+x.s.nom+'</span><span class="sv2" style="color:'+(x.moy<10?'var(--r)':'var(--w)')+'">'+x.moy.toFixed(1)+'/20</span></div>').join('')+'</div>':''}${absRank.length?'<div class="sc2"><div class="sc2-t">ABSENCES FREQUENTES</div>'+absRank.map(x=>'<div class="sr"><span class="sk">'+x.s.prenom+' '+x.s.nom+'</span><span class="sv2" style="color:var(--r)">'+x.n+' abs.</span></div>').join('')+'</div>':''}</div>`
+  w.innerHTML=`<h2 style="font-family:var(--fn);font-size:.82rem;color:var(--c);letter-spacing:.15rem;margin-bottom:18px">TABLEAU DE BORD - ${new Date().toLocaleDateString('fr-FR')}</h2><div class="stat-grid">${clCards}${top.length?'<div class="sc2"><div class="sc2-t">TOP PERFORMANCES</div>'+top.map((x,i)=>'<div class="sr"><span class="sk">'+(i+1)+'. '+x.s.prenom+' '+x.s.nom+'</span><span class="sv2" style="color:var(--g)">'+x.moy.toFixed(1)+'/20</span></div>').join('')+'</div>':''}${flop.length?'<div class="sc2"><div class="sc2-t">A SURVEILLER</div>'+flop.map(x=>'<div class="sr"><span class="sk">'+x.s.prenom+' '+x.s.nom+'</span><span class="sv2" style="color:'+(x.moy<10?'var(--r)':'var(--w)')+'">' +x.moy.toFixed(1)+'/20</span></div>').join('')+'</div>':''}${absRank.length?'<div class="sc2"><div class="sc2-t">ABSENCES FREQUENTES</div>'+absRank.map(x=>'<div class="sr"><span class="sk">'+x.s.prenom+' '+x.s.nom+'</span><span class="sv2" style="color:var(--r)">'+x.n+' abs.</span></div>').join('')+'</div>':''}</div>`
 }
 
-// ── SETTINGS ──────────────────────────────────────────────
+// ── SETTINGS ───────────────────────────────────────────────────────────────
 function openSettingsModal(){const s=DB.settings();document.getElementById('setCd').value=s.code||'jarvis activation';document.getElementById('setMyMail').value=s.myMail||'pierre.perrez22@gmail.com';document.getElementById('setThomasMail').value=s.thomasMail||'thomas.noble05@orange.fr';document.getElementById('setContacts').value=s.contacts||'';document.getElementById('setUrl').value=s.ollamaUrl||'';document.getElementById('setMod').value=s.ollamaModel||'mistral';openModal('moSet')}
 function saveSet(){DB.set('j_set',{code:document.getElementById('setCd').value.trim()||'jarvis activation',myMail:document.getElementById('setMyMail').value.trim(),thomasMail:document.getElementById('setThomasMail').value.trim(),contacts:document.getElementById('setContacts').value.trim(),ollamaUrl:document.getElementById('setUrl').value.trim(),ollamaModel:document.getElementById('setMod').value.trim()||'mistral'});closeModal('moSet');addMsg('j','Reglages enregistres.')}
 document.querySelector('.btn-set').onclick=openSettingsModal
 
-// ── MODALS ────────────────────────────────────────────────
+// ── MODALS ───────────────────────────────────────────────────────────────
 function openModal(id){document.getElementById(id).classList.add('open')}
 function closeModal(id){document.getElementById(id).classList.remove('open')}
 document.addEventListener('click',e=>{if(e.target.classList.contains('mo'))e.target.classList.remove('open')})
