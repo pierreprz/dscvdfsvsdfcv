@@ -194,6 +194,27 @@ html,body{height:100%;overflow:hidden;background:var(--d);color:var(--t);font-fa
 /* ── CHART ── */
 .chart-box{background:var(--d2);border:1px solid rgba(0,212,255,.12);border-radius:6px;padding:10px 12px;margin-bottom:14px}
 .chart-lbl{font-family:var(--fn);font-size:.62rem;color:var(--td);letter-spacing:.07rem;margin-bottom:6px}
+/* ── TRIMESTRE ── */
+.tri-bar{display:flex;gap:6px;margin-bottom:14px;align-items:center;flex-wrap:wrap}
+.tri-lbl{font-family:var(--fn);font-size:.62rem;color:var(--td);letter-spacing:.08rem;margin-right:4px}
+.tri-btn{padding:5px 12px;border:1px solid rgba(0,212,255,.22);border-radius:4px;cursor:pointer;font-family:var(--fn);font-size:.63rem;letter-spacing:.08rem;background:transparent;color:var(--td);transition:all .2s}
+.tri-btn:hover{border-color:var(--c);color:var(--t)}.tri-btn.on{border-color:var(--c);background:rgba(0,212,255,.12);color:var(--c)}
+/* ── BULLETINS ── */
+.bul-item{background:var(--d3);border:1px solid rgba(0,212,255,.1);border-radius:4px;padding:10px 12px;margin-bottom:7px}
+.bul-sname{font-family:var(--fn);font-size:.67rem;color:var(--c);margin-bottom:4px;letter-spacing:.07rem}
+.bul-txt{font-size:.82rem;line-height:1.55;color:var(--t)}
+/* ── OBJECTIFS ── */
+.obj-badge{display:inline-flex;align-items:center;gap:3px;padding:2px 6px;border-radius:8px;font-size:.6rem;font-family:var(--fn);background:rgba(255,170,0,.12);color:var(--w);border:1px solid rgba(255,170,0,.28)}
+.obj-bar-wrap{height:4px;border-radius:2px;background:rgba(255,255,255,.08);margin-top:4px;overflow:hidden}
+.obj-bar{height:100%;border-radius:2px;transition:width .4s}
+/* ── IMPRESSION ── */
+.btn-print{padding:5px 11px;border-radius:4px;cursor:pointer;font-size:.77rem;border:1px solid rgba(0,212,255,.25);background:transparent;color:var(--td);transition:all .2s}.btn-print:hover{border-color:var(--c);color:var(--c)}
+@media print{body{background:#fff!important;color:#000!important;overflow:auto!important}#lock,#app,.mo,#sesOverlay{display:none!important}#printView{display:block!important}}
+#printView{display:none;padding:20px;background:#fff;color:#000;font-family:Arial,sans-serif}
+/* ── PROGRESSION ── */
+.prog-row{display:grid;grid-template-columns:1fr 60px 60px 60px;gap:8px;padding:6px 0;border-bottom:1px solid rgba(0,212,255,.06);align-items:center;font-size:.8rem}
+.prog-row:last-child{border-bottom:none}.prog-th{font-family:var(--fn);font-size:.62rem;color:var(--td);letter-spacing:.06rem}
+.prog-val{text-align:center;font-family:var(--fn);font-size:.78rem}
 </style>
 </head>
 <body>
@@ -264,8 +285,25 @@ html,body{height:100%;overflow:hidden;background:var(--d);color:var(--t);font-fa
       <div class="pnl pnl-r" id="det"><div class="det-ph"><div class="ico">&#128104;&#8205;&#127891;</div><p>Selectionnez un eleve</p></div></div>
     </div>
   </div>
-  <div class="view" id="v-stats" style="display:none"><div class="stat-wrap" id="statWrap"></div></div>
+  <div class="view" id="v-stats" style="display:none">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 20px 0;background:var(--d2);border-bottom:1px solid rgba(0,212,255,.12);flex-wrap:wrap;gap:8px">
+      <div class="tri-bar" style="margin:0">
+        <span class="tri-lbl">TRIMESTRE :</span>
+        <button class="tri-btn on" id="tb-all" onclick="setTriFilter('all')">Tout</button>
+        <button class="tri-btn" id="tb-T1" onclick="setTriFilter('T1')">T1</button>
+        <button class="tri-btn" id="tb-T2" onclick="setTriFilter('T2')">T2</button>
+        <button class="tri-btn" id="tb-T3" onclick="setTriFilter('T3')">T3</button>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn-p" style="border-color:var(--c);color:var(--c);font-size:.75rem;padding:5px 12px" onclick="openBulletinsModal()">&#128203; Bulletins</button>
+        <button class="btn-print" style="font-size:.75rem;padding:5px 12px" onclick="printClassDashboard()">&#128438; PDF Classe</button>
+      </div>
+    </div>
+    <div class="stat-wrap" id="statWrap"></div>
+  </div>
 </div>
+
+<div id="printView"></div>
 
 <!-- SESSION OVERLAY -->
 <div id="sesOverlay">
@@ -303,6 +341,7 @@ html,body{height:100%;overflow:hidden;background:var(--d);color:var(--t);font-fa
     <div class="fr"><label>Note obtenue</label><input type="number" id="gN" min="0" max="20" step="0.5"></div>
     <div class="fr"><label>Note maximale</label><input type="number" id="gM" value="20"></div>
     <div class="fr"><label>Date</label><input type="date" id="gD"></div>
+    <div class="fr"><label>Trimestre</label><select id="gTri" style="padding:8px 10px;background:rgba(0,212,255,.05);border:1px solid rgba(0,212,255,.2);border-radius:4px;color:var(--t);font-family:var(--fb);font-size:.86rem;outline:none"><option value="T1">Trimestre 1</option><option value="T2">Trimestre 2</option><option value="T3">Trimestre 3</option></select></div>
     <div class="fr"><label>Commentaire</label><textarea id="gC" rows="2"></textarea></div>
     <input type="hidden" id="gSid">
     <div class="fa"><button class="btn-cancel" onclick="closeModal('moGr')">Annuler</button><button class="btn-p" onclick="saveGr()">Enregistrer</button></div>
@@ -312,6 +351,7 @@ html,body{height:100%;overflow:hidden;background:var(--d);color:var(--t);font-fa
   <div class="mb">
     <div class="mh"><h3>Enregistrer une absence</h3><button onclick="closeModal('moAbs')">&times;</button></div>
     <div class="fr"><label>Date</label><input type="date" id="aD"></div>
+    <div class="fr"><label>Trimestre</label><select id="aTri" style="padding:8px 10px;background:rgba(0,212,255,.05);border:1px solid rgba(0,212,255,.2);border-radius:4px;color:var(--t);font-family:var(--fb);font-size:.86rem;outline:none"><option value="T1">Trimestre 1</option><option value="T2">Trimestre 2</option><option value="T3">Trimestre 3</option></select></div>
     <div class="fr"><label><input type="checkbox" id="aJ"> Absence justifiee</label></div>
     <div class="fr"><label>Commentaire</label><textarea id="aC" rows="2"></textarea></div>
     <input type="hidden" id="aSid">
@@ -322,9 +362,37 @@ html,body{height:100%;overflow:hidden;background:var(--d);color:var(--t);font-fa
   <div class="mb">
     <div class="mh"><h3>&#128188; Materiel oublie</h3><button onclick="closeModal('moMat')">&times;</button></div>
     <div class="fr"><label>Date</label><input type="date" id="matD"></div>
+    <div class="fr"><label>Trimestre</label><select id="matTri" style="padding:8px 10px;background:rgba(0,212,255,.05);border:1px solid rgba(0,212,255,.2);border-radius:4px;color:var(--t);font-family:var(--fb);font-size:.86rem;outline:none"><option value="T1">Trimestre 1</option><option value="T2">Trimestre 2</option><option value="T3">Trimestre 3</option></select></div>
     <div class="fr"><label>Materiel oublie (description)</label><textarea id="matC" rows="2" placeholder="Ex: chaussures de sport, tenue EPS..."></textarea></div>
     <input type="hidden" id="matSid">
     <div class="fa"><button class="btn-cancel" onclick="closeModal('moMat')">Annuler</button><button class="btn-p" onclick="saveMat()">Enregistrer</button></div>
+  </div>
+</div>
+<div class="mo" id="moObj">
+  <div class="mb">
+    <div class="mh"><h3>&#127919; Fixer un objectif</h3><button onclick="closeModal('moObj')">&times;</button></div>
+    <p style="font-size:.8rem;color:var(--td);margin-bottom:12px">Definissez un objectif de note /20 pour cet eleve dans cette activite.</p>
+    <div class="fr"><label>Activite</label><input id="objAct" placeholder="Handball, Natation..."></div>
+    <div class="fr"><label>Objectif /20</label><input type="number" id="objVal" min="0" max="20" step="0.5" placeholder="Ex: 14"></div>
+    <input type="hidden" id="objSid">
+    <div class="fa"><button class="btn-cancel" onclick="closeModal('moObj')">Annuler</button><button class="btn-p" onclick="saveObj()">Enregistrer</button></div>
+  </div>
+</div>
+<div class="mo" id="moBul">
+  <div class="mb" style="width:580px;max-width:98vw">
+    <div class="mh"><h3>&#128203; Bulletins de classe</h3><button onclick="closeModal('moBul')">&times;</button></div>
+    <div style="display:flex;gap:10px;align-items:flex-end;margin-bottom:14px">
+      <div class="fr" style="flex:1;margin:0"><label>Classe</label><select id="bulCls" onchange="renderBulletins(this.value)" style="padding:8px 10px;background:rgba(0,212,255,.05);border:1px solid rgba(0,212,255,.2);border-radius:4px;color:var(--t);font-family:var(--fb);font-size:.86rem;outline:none;width:100%"></select></div>
+      <div class="fr" style="flex:1;margin:0"><label>Trimestre</label><select id="bulTri" onchange="renderBulletins(document.getElementById('bulCls').value)" style="padding:8px 10px;background:rgba(0,212,255,.05);border:1px solid rgba(0,212,255,.2);border-radius:4px;color:var(--t);font-family:var(--fb);font-size:.86rem;outline:none;width:100%"><option value="all">Tous</option><option value="T1">T1</option><option value="T2">T2</option><option value="T3">T3</option></select></div>
+    </div>
+    <div id="bulContent" style="max-height:55vh;overflow-y:auto;padding-right:4px"></div>
+    <div class="fa" style="justify-content:space-between">
+      <button class="btn-cancel" onclick="closeModal('moBul')">Fermer</button>
+      <div style="display:flex;gap:8px">
+        <button class="btn-p" onclick="copyBulletins()">&#128203; Copier</button>
+        <button class="btn-p" style="border-color:var(--g);color:var(--g)" onclick="exportBulletins()">&#11015; Export CSV</button>
+      </div>
+    </div>
   </div>
 </div>
 <div class="mo" id="moSes">
@@ -345,6 +413,7 @@ html,body{height:100%;overflow:hidden;background:var(--d);color:var(--t);font-fa
     <div class="fr"><label>Email Thomas (« envoie a Thomas »)</label><input id="setThomasMail" placeholder="thomas@email.fr"></div>
     <p style="font-size:.73rem;color:var(--td);margin:6px 0 3px">Autres contacts (format : prenom=email, un par ligne)</p>
     <div class="fr"><textarea id="setContacts" rows="3" placeholder="jean=jean@gmail.com&#10;marie=marie@gmail.com"></textarea></div>
+    <div class="fr"><label>Trimestre actuel</label><select id="setTri" style="padding:8px 10px;background:rgba(0,212,255,.05);border:1px solid rgba(0,212,255,.2);border-radius:4px;color:var(--t);font-family:var(--fb);font-size:.86rem;outline:none"><option value="T1">Trimestre 1</option><option value="T2">Trimestre 2</option><option value="T3">Trimestre 3</option></select></div>
     <div class="fr"><label>Ollama URL (optionnel, IA locale)</label><input id="setUrl" placeholder="http://localhost:11434"></div>
     <div class="fr"><label>Modele Ollama</label><input id="setMod" placeholder="mistral ou llama3.2"></div>
     <div class="fa"><button class="btn-cancel" onclick="closeModal('moSet')">Annuler</button><button class="btn-p" onclick="saveSet()">Enregistrer</button></div>
@@ -362,17 +431,20 @@ const DB={
   absences:()=>DB.get('j_abs')||[],
   grades:()=>DB.get('j_grd')||[],
   materials:()=>DB.get('j_mat')||[],
-  settings:()=>DB.get('j_set')||{code:'jarvis activation',myMail:'pierre.perrez22@gmail.com',thomasMail:'thomas.noble05@orange.fr',contacts:'',ollamaUrl:'',ollamaModel:'mistral'},
+  settings:()=>DB.get('j_set')||{code:'jarvis activation',myMail:'pierre.perrez22@gmail.com',thomasMail:'thomas.noble05@orange.fr',contacts:'',ollamaUrl:'',ollamaModel:'mistral',trimestre:'T1'},
   nextId:arr=>arr.length?Math.max(...arr.map(x=>x.id))+1:1,
   addStudent(s){const a=DB.students();s.id=DB.nextId(a);a.push(s);DB.set('j_stu',a);return s},
   updStudent(s){const a=DB.students().map(x=>x.id===s.id?s:x);DB.set('j_stu',a)},
-  delStudent(id){DB.set('j_stu',DB.students().filter(x=>x.id!==id));DB.set('j_abs',DB.absences().filter(x=>x.sid!==id));DB.set('j_grd',DB.grades().filter(x=>x.sid!==id));DB.set('j_mat',DB.materials().filter(x=>x.sid!==id))},
+  delStudent(id){DB.set('j_stu',DB.students().filter(x=>x.id!==id));DB.set('j_abs',DB.absences().filter(x=>x.sid!==id));DB.set('j_grd',DB.grades().filter(x=>x.sid!==id));DB.set('j_mat',DB.materials().filter(x=>x.sid!==id));DB.set('j_obj',DB.objectifs().filter(x=>x.sid!==id))},
   addAbsence(a){const arr=DB.absences();a.id=DB.nextId(arr);arr.push(a);DB.set('j_abs',arr)},
   delAbsence(id){DB.set('j_abs',DB.absences().filter(x=>x.id!==id))},
   addGrade(g){const arr=DB.grades();g.id=DB.nextId(arr);arr.push(g);DB.set('j_grd',arr)},
   delGrade(id){DB.set('j_grd',DB.grades().filter(x=>x.id!==id))},
   addMaterial(m){const arr=DB.materials();m.id=DB.nextId(arr);arr.push(m);DB.set('j_mat',arr)},
   delMaterial(id){DB.set('j_mat',DB.materials().filter(x=>x.id!==id))},
+  objectifs:()=>DB.get('j_obj')||[],
+  setObjectif(sid,activite,objectif){const arr=DB.objectifs();const idx=arr.findIndex(x=>x.sid===sid&&norm(x.activite)===norm(activite));if(idx>=0){arr[idx].objectif=objectif;DB.set('j_obj',arr)}else{arr.push({id:DB.nextId(arr),sid,activite,objectif});DB.set('j_obj',arr)}},
+  delObjectif(id){DB.set('j_obj',DB.objectifs().filter(x=>x.id!==id))},
 }
 
 // ── UTILS ─────────────────────────────────────────────────────────────────────
@@ -408,12 +480,12 @@ function generateRecapText(){
     const cs=students.filter(s=>s.classe===cl)
     const moys=cs.map(s=>{const sg=grades.filter(g=>g.sid===s.id);return sg.length?sg.reduce((a,g)=>a+g.note/g.noteMax*20,0)/sg.length:null}).filter(x=>x!==null)
     const moyC=moys.length?(moys.reduce((a,b)=>a+b,0)/moys.length).toFixed(1):null
-    t+='CLASSE: '+cl+(moyC?' | Moyenne: '+moyC+'/20':'')+"\n"+'-'.repeat(40)+'\n'
+    t+='CLASSE: '+cl+(moyC?' | Moyenne: '+moyC+'/20':'')+'\n'+'-'.repeat(40)+'\n'
     cs.forEach(s=>{
       const sg=grades.filter(g=>g.sid===s.id),sa=absences.filter(a=>a.sid===s.id),sm=materials.filter(m=>m.sid===s.id)
       const moy=sg.length?(sg.reduce((a,g)=>a+g.note/g.noteMax*20,0)/sg.length).toFixed(1):'--'
       t+='  '+s.prenom+' '+s.nom+' | Moy: '+moy+'/20 | Abs: '+sa.length+' | Materiel: '+sm.length+'\n'
-      sg.forEach(g=>{t+='    Note - '+g.activite+': '+g.note+'/'+g.noteMax+(g.commentaire?' ('+g.commentaire+')':'')+"\n"})
+      sg.forEach(g=>{t+='    Note - '+g.activite+': '+g.note+'/'+g.noteMax+(g.commentaire?' ('+g.commentaire+')':'')+'\n'})
     })
     t+='\n'
   })
@@ -559,8 +631,21 @@ function speak(text){
 }
 if(window.speechSynthesis)window.speechSynthesis.onvoiceschanged=()=>window.speechSynthesis.getVoices()
 
-// ── VOICE STATE MACHINE (ajout eleve vocal) ───────────────────────────────────
+// ── STATE ─────────────────────────────────────────────────────────────────────
 let voiceState=null
+let triFilter='all'
+let stuTri='all'
+
+function setTriFilter(t){
+  triFilter=t
+  ;['all','T1','T2','T3'].forEach(x=>{
+    const el=document.getElementById('tb-'+x)
+    if(el)el.classList.toggle('on',x===t)
+  })
+  renderStats()
+}
+
+// ── VOICE STATE MACHINE (ajout eleve vocal) ───────────────────────────────────
 function updateVSBar(){
   const bar=document.getElementById('vsBar'),txt=document.getElementById('vsBarTxt')
   if(!voiceState){bar.classList.remove('on');return}
@@ -635,12 +720,77 @@ async function callOllama(msg,url,model){
   const d=await r.json();return d.message?.content||null
 }
 
+// ── COMMANDES VOCALES NATURELLES ─────────────────────────────────────────────
+function parseNaturalCommand(m, students){
+  let found=null
+  for(const s of students){
+    const fn=norm(s.prenom),ln=norm(s.nom)
+    if(m.includes(fn)||m.includes(ln)){found=s;break}
+  }
+  if(!found)return null
+  const today=new Date().toISOString().split('T')[0]
+  const yesterday=new Date(Date.now()-86400000).toISOString().split('T')[0]
+  const dateStr=m.includes('hier')?yesterday:today
+  const tri=DB.settings().trimestre||'T1'
+
+  // ── NOTE: "14 sur 20 en handball", "note 15/20 natation", "15 en handball" ──
+  const grPat=m.match(/(\d+(?:[.,]\d+)?)\s*(?:sur|\/|de)\s*(\d+)/)
+  if(grPat){
+    const note=parseFloat(grPat[1].replace(',','.'))
+    const noteMax=parseFloat(grPat[2])
+    if(!isNaN(note)&&!isNaN(noteMax)&&note>=0&&note<=noteMax){
+      const actM=m.match(/en ([a-z]+)/)||m.match(/pour (?:le |la |l )?([a-z]+)/)||m.match(/activite ([a-z]+)/)
+      const activite=actM?cap(actM[1]):'EPS'
+      DB.addGrade({sid:found.id,activite,note,noteMax,date:dateStr,tri,commentaire:null})
+      renderStudents();if(selId===found.id)selectStu(selId,stuTri)
+      return '&#10003; Note '+note+'/'+noteMax+' en '+activite+' enregistree pour '+found.prenom+' '+found.nom+'. Trimestre : '+tri+'.'
+    }
+  }
+  // ── NOTE simple: "15 en handball à Thomas" ──
+  const grSimple=m.match(/(\d+(?:[.,]\d+)?)\s+en\s+([a-z]+)/)
+  if(grSimple&&/(note|mis|mets|mettre|ajoute|marque|donne)/.test(m)){
+    const note=parseFloat(grSimple[1].replace(',','.'))
+    const activite=cap(grSimple[2])
+    if(!isNaN(note)&&note>=0&&note<=20){
+      DB.addGrade({sid:found.id,activite,note,noteMax:20,date:dateStr,tri,commentaire:null})
+      renderStudents();if(selId===found.id)selectStu(selId,stuTri)
+      return '&#10003; Note '+note+'/20 en '+activite+' enregistree pour '+found.prenom+' '+found.nom+'.'
+    }
+  }
+  // ── ABSENCE: "Thomas absent aujourd'hui non justifié" ──
+  if(/(absent|absente|absence)/.test(m)){
+    const justifiee=/(justif)/.test(m)&&!/(non justif|pas justif|nj|injustif)/.test(m)
+    DB.addAbsence({sid:found.id,date:dateStr,justifiee,tri,commentaire:null})
+    renderStudents();if(selId===found.id)selectStu(selId,stuTri)
+    return '&#10003; Absence '+(justifiee?'justifiee':'non justifiee')+' enregistree pour '+found.prenom+' '+found.nom+' le '+new Date(dateStr).toLocaleDateString('fr-FR')+'.'
+  }
+  // ── MATERIEL: "Thomas a oublié son matériel / sa tenue" ──
+  if(/(oubli|materiel|tenue|affaire|equipement|kit|short|chaussure)/.test(m)){
+    DB.addMaterial({sid:found.id,date:dateStr,tri,commentaire:'Oubli note vocalement'})
+    renderStudents();if(selId===found.id)selectStu(selId,stuTri)
+    return '&#10003; Oubli de materiel enregistre pour '+found.prenom+' '+found.nom+'.'
+  }
+  return null
+}
+
 // ── JARVIS AI ─────────────────────────────────────────────────────────────────
 function jarvisRespond(msg){
   const m=norm(msg),students=DB.students(),absences=DB.absences(),grades=DB.grades(),materials=DB.materials()
   const getStats=s=>{
     const sa=absences.filter(a=>a.sid===s.id),sg=grades.filter(g=>g.sid===s.id),sm=materials.filter(mat=>mat.sid===s.id)
     return{absences:sa,grades:sg,materials:sm,moy:sg.length?sg.reduce((a,g)=>a+g.note/g.noteMax*20,0)/sg.length:null}
+  }
+
+  // ── COMMANDE DIRECTE (note/absence/materiel sans formulaire) ──
+  if(students.length&&/(note|absent|oubli|materiel|tenue|mis|mets|marque|\d+\s*(?:sur|\/)\s*\d+)/.test(m)){
+    const nat=parseNaturalCommand(m,students)
+    if(nat){speak(nat.replace(/<[^>]+>/g,''));return nat}
+  }
+
+  // ── IMPRESSION PDF ──
+  if(/(imprimer|imprimer|pdf|imprime|fiche|print)/.test(m)){
+    for(const s of students){if(m.includes(norm(s.prenom))||m.includes(norm(s.nom))){printStudentSheet(s.id);return'J imprime la fiche de '+s.prenom+' '+s.nom+' en PDF !'}}
+    if(/(classe|tableau|bord|dashboard)/.test(m)){printClassDashboard();return'J imprime le tableau de bord de la classe !'}
   }
 
   // ── NOUVELLE SEANCE ──
@@ -711,6 +861,41 @@ function jarvisRespond(msg){
       const nbMat=materials.filter(a=>cs.find(s=>s.id===a.sid)).length
       return 'Classe '+cl+' : '+cs.length+' eleve(s)'+(moyC?', moyenne '+moyC+'/20':'')+', '+nbAbs+' absence(s), '+nbMat+' oubli(s) materiel.'
     }
+  }
+
+  // ── RECHERCHE AVANCEE ──
+  // "quels eleves ont moins/plus de X en activite"
+  const actGrMatch=m.match(/(moins|plus).{0,8}(\d+(?:[.,]\d+)?).{0,12}en ([a-z]+)/)
+  if(actGrMatch){
+    const dir=actGrMatch[1],thresh=parseFloat(actGrMatch[2].replace(',','.')),act=actGrMatch[3]
+    const res=students.map(s=>{const sg=grades.filter(g=>g.sid===s.id&&norm(g.activite).includes(act));if(!sg.length)return null;const moy=sg.reduce((a,g)=>a+g.note/g.noteMax*20,0)/sg.length;const ok=dir==='moins'?moy<thresh:moy>thresh;return ok?{s,moy}:null}).filter(Boolean)
+    if(!res.length)return'Aucun eleve ne correspond a ce critere pour l activite '+(act)+'.'
+    return(dir==='moins'?'Eleves avec moins de ':'Eleves avec plus de ')+thresh+'/20 en '+act+' : '+res.map(x=>x.s.prenom+' '+x.s.nom+' ('+x.moy.toFixed(1)+')').join(', ')+'.'
+  }
+  // "qui a plus/moins de X absences"
+  const absThMatch=m.match(/(plus|moins).{0,8}(\d+).{0,12}absence/)
+  if(absThMatch){
+    const dir=absThMatch[1],thresh=parseInt(absThMatch[2])
+    const nj=m.includes('non justif')||m.includes('nj')
+    const res=students.map(s=>{const sa=absences.filter(a=>a.sid===s.id);const cnt=nj?sa.filter(a=>!a.justifiee).length:sa.length;const ok=dir==='plus'?cnt>thresh:cnt<thresh;return ok?{s,cnt}:null}).filter(Boolean)
+    if(!res.length)return'Aucun eleve ne correspond.'
+    return'Eleves avec '+(dir==='plus'?'plus':'moins')+' de '+thresh+' absence(s)'+(nj?' non justifiee(s)':'')+' : '+res.map(x=>x.s.prenom+' '+x.s.nom+' ('+x.cnt+')').join(', ')+'.'
+  }
+  // "moyenne de la classe X en activite" ou "moyenne en natation 3eme"
+  const actClMatch=m.match(/moyenne.{0,20}en ([a-z]+)/)
+  if(actClMatch){
+    const act=actClMatch[1]
+    let scope=students
+    for(const cl of classes){if(m.includes(norm(cl))){scope=students.filter(s=>s.classe===cl);break}}
+    const data=scope.map(s=>{const sg=grades.filter(g=>g.sid===s.id&&norm(g.activite).includes(act));return sg.length?sg.reduce((a,g)=>a+g.note/g.noteMax*20,0)/sg.length:null}).filter(x=>x!==null)
+    if(!data.length)return'Pas de notes en '+act+' pour cette selection.'
+    const moy=(data.reduce((a,b)=>a+b,0)/data.length).toFixed(1)
+    return'Moyenne en '+act+(scope!==students?' pour '+scope[0]?.classe:'')+' : '+moy+'/20 ('+data.length+' eleve(s)).'
+  }
+  // "bulletins de X classe" (voice)
+  if(/(bulletin|commentaire|appreciation).*(classe|groupe)/.test(m)||/(bulletin|commentaire).*(3eme|4eme|5eme|6eme|seconde|premiere|terminale|cm|ce|cp)/.test(m)){
+    for(const cl of classes){if(m.includes(norm(cl))){openBulletinsModal();return'J ouvre les bulletins pour la classe '+cl+'. Vous pouvez les exporter en CSV !'}}
+    openBulletinsModal();return'Choisissez une classe pour voir les bulletins !'
   }
 
   // ── MOTS-CLES GENERAUX ──
@@ -813,7 +998,7 @@ function renderStudents(){
     const sel=s.id===selId?'sel':''
     const unjAbs=sa.filter(a=>!a.justifiee).length
     const hasGrDrop=sg.length>=2&&(()=>{const so=[...sg].sort((a,b)=>new Date(b.date)-new Date(a.date));const last=so[0].note/so[0].noteMax*20;const prev=so[1].note/so[1].noteMax*20;return prev-last>=3})()
-    return '<div class="si '+sel+'" onclick="selectStu('+s.id+'")>'
+    return '<div class="si '+sel+'" onclick="selectStu('+s.id+')">'
       +'<div><div class="sn">'+s.prenom+' '+s.nom+'</div><div class="sm">'+s.classe+'</div></div>'
       +'<div class="bgs">'
       +(moy?'<span class="bg m">'+moy+'/20</span>':'')
@@ -826,21 +1011,32 @@ function renderStudents(){
   }).join('')
 }
 function filterStu(){renderStudents()}
-function selectStu(id){
-  selId=id;renderStudents()
+function selectStu(id,t){
+  selId=id;if(t)stuTri=t;renderStudents()
   const s=DB.students().find(x=>x.id===id);if(!s)return
-  const abs=DB.absences().filter(a=>a.sid===id)
-  const grd=DB.grades().filter(g=>g.sid===id)
-  const mat=DB.materials().filter(m=>m.sid===id)
+  const triF=stuTri
+  const abs=DB.absences().filter(a=>a.sid===id&&(triF==='all'||!a.tri||a.tri===triF))
+  const grd=DB.grades().filter(g=>g.sid===id&&(triF==='all'||!g.tri||g.tri===triF))
+  const mat=DB.materials().filter(m=>m.sid===id&&(triF==='all'||!m.tri||m.tri===triF))
   const moy=grd.length?grd.reduce((a,g)=>a+g.note/g.noteMax*20,0)/grd.length:null
   const moyS=moy!==null?moy.toFixed(1):'--'
   const moyC=moy!==null&&moy<10?'r':moy!==null?'g':''
   const absIj=abs.filter(a=>!a.justifiee).length
 
+  const objs=DB.objectifs().filter(o=>o.sid===id)
   const grHtml=grd.length?grd.map(g=>{
     const s20=(g.note/g.noteMax*20).toFixed(1),lo=parseFloat(s20)<10?' lo':''
-    return '<div class="gi"><div><div class="ga">'+g.activite+'</div><div class="gc">'+g.date+(g.commentaire?' — '+g.commentaire:'')+'</div></div>'
-      +'<div style="display:flex;align-items:center;gap:8px"><span class="gv'+lo+'">'+g.note+'/'+g.noteMax+' ('+s20+'/20)</span>'
+    const obj=objs.find(o=>norm(o.activite)===norm(g.activite))
+    const objBadge=obj?'<span class="obj-badge">&#127919; obj: '+obj.objectif+'/20</span>':''
+    const pct=Math.min(100,(g.note/g.noteMax*20)/20*100)
+    const objPct=obj?Math.min(100,obj.objectif/20*100):null
+    const barCol=parseFloat(s20)>=( obj?obj.objectif:14)?'var(--g)':parseFloat(s20)<10?'var(--r)':'var(--c)'
+    return '<div class="gi"><div style="flex:1"><div class="ga">'+g.activite+(g.tri?' <span style="font-size:.6rem;color:var(--td)">['+g.tri+']</span>':'')+' '+objBadge+'</div>'
+      +'<div class="gc">'+g.date+(g.commentaire?' — '+g.commentaire:'')+'</div>'
+      +'<div class="obj-bar-wrap"><div class="obj-bar" style="width:'+pct+'%;background:'+barCol+'"></div></div>'
+      +(obj?'<div style="font-size:.62rem;color:var(--td);margin-top:2px">'+s20+'/20 vs objectif '+obj.objectif+'/20 — '+(parseFloat(s20)-obj.objectif>=0?'+':'')+(parseFloat(s20)-obj.objectif).toFixed(1)+' pts</div>':'')
+      +'</div>'
+      +'<div style="display:flex;align-items:center;gap:8px;flex-shrink:0"><span class="gv'+lo+'">'+g.note+'/'+g.noteMax+' ('+s20+')</span>'
       +'<button class="btn-x" onclick="delGr('+g.id+')">&times;</button></div></div>'
   }).join(''):'<p style="color:var(--td);font-size:.82rem">Aucune note.</p>'
 
@@ -857,14 +1053,18 @@ function selectStu(id){
       +'<button class="btn-x" onclick="delMat('+m.id+')">&times;</button></div></div>'
   }).join(''):'<p style="color:var(--td);font-size:.82rem">Aucun oubli enregistre.</p>'
 
+  const triBar='<div class="tri-bar" style="margin-top:4px"><span class="tri-lbl">FILTRE :</span>'
+    +['all','T1','T2','T3'].map(t=>'<button class="tri-btn'+(stuTri===t?' on':'')+'" onclick="selectStu('+id+',\''+t+'\')">'+(t==='all'?'Tout':t)+'</button>').join('')+'</div>'
   document.getElementById('det').innerHTML=
     '<div class="det">'
     +'<div class="det-hdr"><div>'
     +'<div class="det-name">'+s.prenom+' '+s.nom+'</div>'
     +'<div class="det-cls">'+s.classe+(s.dateNaissance?' — Ne(e) le '+s.dateNaissance:'')+'</div>'
     +(s.notes?'<div style="font-size:.77rem;color:var(--td);margin-top:4px">'+s.notes+'</div>':'')
+    +triBar
     +'</div><div class="det-acts">'
     +'<button class="bs e" onclick="openEditStu('+s.id+')">Modifier</button>'
+    +'<button class="btn-print" onclick="printStudentSheet('+s.id+')">&#128438; PDF</button>'
     +'<button class="bs d" onclick="delStu('+s.id+')">Supprimer</button>'
     +'</div></div>'
     +'<div class="sc">'
@@ -873,7 +1073,7 @@ function selectStu(id){
     +'<div class="scard"><div class="sv '+(mat.length>3?'r':'w')+'">'+mat.length+'</div><div class="sl">MATERIEL OUBLIE</div></div>'
     +'</div>'
     +(grd.length>=2?drawGradeChart(grd):'')
-    +'<div class="sec">NOTES <button class="bs e" onclick="openAddGr('+s.id+')">+ Note</button></div>'+grHtml
+    +'<div class="sec">NOTES <div style="display:flex;gap:6px"><button class="bs e" onclick="openAddGr('+s.id+')">+ Note</button><button class="btn-print" style="font-size:.7rem;padding:4px 9px" onclick="openObjModal('+s.id+')">&#127919; Objectif</button></div></div>'+grHtml
     +'<div class="sec">ABSENCES <button class="bs e" onclick="openAddAbs('+s.id+')">+ Absence</button></div>'+abHtml
     +'<div class="sec">MATERIEL OUBLIE <button class="bs e" onclick="openAddMat('+s.id+')">+ Materiel</button></div>'+matHtml
     +'</div>'
@@ -885,22 +1085,26 @@ function openEditStu(id){const s=DB.students().find(x=>x.id===id);if(!s)return;d
 function saveStu(){const id=document.getElementById('sId').value,s={prenom:document.getElementById('sP').value,nom:document.getElementById('sN').value,classe:document.getElementById('sCl').value,dateNaissance:document.getElementById('sD').value||null,notes:document.getElementById('sNo').value||null};if(!s.prenom||!s.nom||!s.classe){alert('Prenom, nom et classe requis.');return};if(id){s.id=parseInt(id);DB.updStudent(s)}else DB.addStudent(s);closeModal('moStu');renderStudents();if(id)selectStu(parseInt(id))}
 function delStu(id){if(!confirm('Supprimer cet eleve et toutes ses donnees ?'))return;DB.delStudent(id);selId=null;document.getElementById('det').innerHTML='<div class="det-ph"><div class="ico">&#128104;&#8205;&#127891;</div><p>Selectionnez un eleve</p></div>';renderStudents()}
 
-function openAddGr(sid){document.getElementById('gSid').value=sid;document.getElementById('gA').value='';document.getElementById('gN').value='';document.getElementById('gM').value='20';document.getElementById('gD').value=new Date().toISOString().split('T')[0];document.getElementById('gC').value='';openModal('moGr')}
-function saveGr(){const sid=parseInt(document.getElementById('gSid').value),note=parseFloat(document.getElementById('gN').value),noteMax=parseFloat(document.getElementById('gM').value),activite=document.getElementById('gA').value;if(!activite||isNaN(note)){alert('Activite et note requises.');return};DB.addGrade({sid,activite,note,noteMax,date:document.getElementById('gD').value,commentaire:document.getElementById('gC').value||null});closeModal('moGr');selectStu(sid);renderStudents()}
+function openAddGr(sid){const tri=DB.settings().trimestre||'T1';document.getElementById('gSid').value=sid;document.getElementById('gA').value='';document.getElementById('gN').value='';document.getElementById('gM').value='20';document.getElementById('gD').value=new Date().toISOString().split('T')[0];document.getElementById('gC').value='';document.getElementById('gTri').value=tri;openModal('moGr')}
+function saveGr(){const sid=parseInt(document.getElementById('gSid').value),note=parseFloat(document.getElementById('gN').value),noteMax=parseFloat(document.getElementById('gM').value),activite=document.getElementById('gA').value;if(!activite||isNaN(note)){alert('Activite et note requises.');return};DB.addGrade({sid,activite,note,noteMax,date:document.getElementById('gD').value,tri:document.getElementById('gTri').value,commentaire:document.getElementById('gC').value||null});closeModal('moGr');selectStu(sid);renderStudents()}
 function delGr(id){if(!confirm('Supprimer cette note ?'))return;DB.delGrade(id);if(selId){selectStu(selId);renderStudents()}}
 
-function openAddAbs(sid){document.getElementById('aSid').value=sid;document.getElementById('aD').value=new Date().toISOString().split('T')[0];document.getElementById('aJ').checked=false;document.getElementById('aC').value='';openModal('moAbs')}
-function saveAbs(){const sid=parseInt(document.getElementById('aSid').value);DB.addAbsence({sid,date:document.getElementById('aD').value,justifiee:document.getElementById('aJ').checked,commentaire:document.getElementById('aC').value||null});closeModal('moAbs');selectStu(sid);renderStudents()}
+function openAddAbs(sid){const tri=DB.settings().trimestre||'T1';document.getElementById('aSid').value=sid;document.getElementById('aD').value=new Date().toISOString().split('T')[0];document.getElementById('aJ').checked=false;document.getElementById('aC').value='';document.getElementById('aTri').value=tri;openModal('moAbs')}
+function saveAbs(){const sid=parseInt(document.getElementById('aSid').value);DB.addAbsence({sid,date:document.getElementById('aD').value,tri:document.getElementById('aTri').value,justifiee:document.getElementById('aJ').checked,commentaire:document.getElementById('aC').value||null});closeModal('moAbs');selectStu(sid);renderStudents()}
 function delAbs(id){if(!confirm('Supprimer cette absence ?'))return;DB.delAbsence(id);if(selId){selectStu(selId);renderStudents()}}
 
-function openAddMat(sid){document.getElementById('matSid').value=sid;document.getElementById('matD').value=new Date().toISOString().split('T')[0];document.getElementById('matC').value='';openModal('moMat')}
-function saveMat(){const sid=parseInt(document.getElementById('matSid').value);DB.addMaterial({sid,date:document.getElementById('matD').value,commentaire:document.getElementById('matC').value||null});closeModal('moMat');selectStu(sid);renderStudents()}
+function openAddMat(sid){const tri=DB.settings().trimestre||'T1';document.getElementById('matSid').value=sid;document.getElementById('matD').value=new Date().toISOString().split('T')[0];document.getElementById('matC').value='';document.getElementById('matTri').value=tri;openModal('moMat')}
+function saveMat(){const sid=parseInt(document.getElementById('matSid').value);DB.addMaterial({sid,date:document.getElementById('matD').value,tri:document.getElementById('matTri').value,commentaire:document.getElementById('matC').value||null});closeModal('moMat');selectStu(sid);renderStudents()}
 function delMat(id){if(!confirm('Supprimer cet oubli ?'))return;DB.delMaterial(id);if(selId){selectStu(selId);renderStudents()}}
 
 // ── STATS ─────────────────────────────────────────────────────────────────────
 function renderStats(){
-  const students=DB.students(),absences=DB.absences(),grades=DB.grades(),materials=DB.materials(),w=document.getElementById('statWrap')
+  const students=DB.students(),allGrades=DB.grades(),allAbsences=DB.absences(),allMaterials=DB.materials(),w=document.getElementById('statWrap')
   if(!students.length){w.innerHTML='<p style="color:var(--td);padding:22px">Ajoutez des eleves pour voir les stats.</p>';return}
+  const tf=triFilter
+  const grades=allGrades.filter(g=>tf==='all'||!g.tri||g.tri===tf)
+  const absences=allAbsences.filter(a=>tf==='all'||!a.tri||a.tri===tf)
+  const materials=allMaterials.filter(m=>tf==='all'||!m.tri||m.tri===tf)
   const classes=[...new Set(students.map(s=>s.classe))].sort()
 
   const clCards=classes.map(cl=>{
@@ -913,11 +1117,27 @@ function renderStats(){
     return '<div class="sc2"><div class="sc2-t">Classe '+cl+'</div>'
       +'<div class="sr"><span class="sk">Eleves</span><span class="sv2">'+cs.length+'</span></div>'
       +'<div class="sr"><span class="sk">Absences</span><span class="sv2" style="color:'+(nbAbs>10?'var(--r)':'var(--t)')+'">'+nbAbs+'</span></div>'
-      +'<div class="sr"><span class="sk">Moy. classe</span><span class="sv2" style="color:'+(moyC&&parseFloat(moyC)<10?'var(--r)':'var(--g)')+'">'+(moyC?moyC+'/20':'--')+'</span></div>'
+      +'<div class="sr"><span class="sk">Moy. classe</span><span class="sv2" style="color:'+(moyC&&parseFloat(moyC)<10?'var(--r)':'var(--g)')+'">'+( moyC?moyC+'/20':'--')+'</span></div>'
       +'<div class="sr"><span class="sk">Materiel oublie</span><span class="sv2" style="color:'+(nbMat>5?'var(--w)':'var(--t)')+'">'+nbMat+'</span></div>'
       +(diff.length?'<div style="margin-top:8px"><div style="font-size:.7rem;color:var(--td);margin-bottom:5px">EN DIFFICULTE</div>'+diff.map(s=>'<div class="di">'+s.prenom+' '+s.nom+'</div>').join('')+'</div>':'')
       +'</div>'
   }).join('')
+
+  // Progression T1→T2→T3 (si filtre = tout)
+  let progCard=''
+  if(tf==='all'){
+    const tris=['T1','T2','T3']
+    const stuWithAll=students.filter(s=>tris.some(t=>allGrades.filter(g=>g.sid===s.id&&g.tri===t).length>0))
+    if(stuWithAll.length>0){
+      progCard='<div class="sc2"><div class="sc2-t">&#128200; PROGRESSION TRIMESTRIELLE</div>'
+        +'<div class="prog-row"><span class="prog-th">ELEVE</span><span class="prog-th" style="text-align:center">T1</span><span class="prog-th" style="text-align:center">T2</span><span class="prog-th" style="text-align:center">T3</span></div>'
+        +stuWithAll.slice(0,8).map(s=>{
+          const vals=tris.map(t=>{const sg=allGrades.filter(g=>g.sid===s.id&&g.tri===t);return sg.length?(sg.reduce((a,g)=>a+g.note/g.noteMax*20,0)/sg.length).toFixed(1):null})
+          const cols=vals.map((v,i)=>{if(!v)return'<span class="prog-val" style="color:var(--td)">--</span>';const prev=vals[i-1]?parseFloat(vals[i-1]):null;const cur=parseFloat(v);const col=cur<10?'var(--r)':prev!==null&&cur-prev>=1.5?'var(--g)':prev!==null&&prev-cur>=1.5?'var(--r)':'var(--t)';return'<span class="prog-val" style="color:'+col+'">'+v+'</span>'})
+          return'<div class="prog-row"><span style="font-size:.8rem">'+s.prenom+' '+s.nom+'</span>'+cols.join('')+'</div>'
+        }).join('')+'</div>'
+    }
+  }
 
   const withG=students.map(s=>{const sg=grades.filter(g=>g.sid===s.id);return sg.length?{s,moy:sg.reduce((a,g)=>a+g.note/g.noteMax*20,0)/sg.length}:null}).filter(Boolean)
   const top=[...withG].sort((a,b)=>b.moy-a.moy).slice(0,3)
@@ -926,10 +1146,10 @@ function renderStats(){
   const matRank=students.map(s=>({s,n:materials.filter(a=>a.sid===s.id).length})).filter(x=>x.n>0).sort((a,b)=>b.n-a.n).slice(0,5)
 
   const alerts=getAlerts()
-  const alertsHtml=alerts.length?'<div class="alerts-wrap"><div class="alerts-ttl">&#9888; ALERTES <span style="font-family:var(--fb);font-size:.75rem;background:var(--r);color:var(--d);border-radius:50%;padding:1px 6px;font-weight:700">'+alerts.length+'</span></div>'+alerts.map(a=>'<div class="al-item '+a.level+'"><strong>'+a.s.prenom+' '+a.s.nom+'</strong> <span style="font-size:.72rem;opacity:.7">'+a.s.classe+'</span> — '+a.msg+'</div>').join('')+'</div>':""
+  const alertsHtml=alerts.length?'<div class="alerts-wrap"><div class="alerts-ttl">&#9888; ALERTES <span style="font-family:var(--fb);font-size:.75rem;background:var(--r);color:var(--d);border-radius:50%;padding:1px 6px;font-weight:700">'+alerts.length+'</span></div>'+alerts.map(a=>'<div class="al-item '+a.level+'"><strong>'+a.s.prenom+' '+a.s.nom+'</strong> <span style="font-size:.72rem;opacity:.7">'+a.s.classe+'</span> — '+a.msg+'</div>').join('')+'</div>':''
   w.innerHTML='<h2 style="font-family:var(--fn);font-size:.8rem;color:var(--c);letter-spacing:.14rem;margin-bottom:16px">TABLEAU DE BORD — '+new Date().toLocaleDateString('fr-FR')+'</h2>'
     +alertsHtml
-    +'<div class="stat-grid">'+clCards
+    +'<div class="stat-grid">'+clCards+progCard
     +(top.length?'<div class="sc2"><div class="sc2-t">&#127942; TOP PERFORMANCES</div>'+top.map((x,i)=>'<div class="sr"><span class="sk">'+(i+1)+'. '+x.s.prenom+' '+x.s.nom+'</span><span class="sv2" style="color:var(--g)">'+x.moy.toFixed(1)+'/20</span></div>').join('')+'</div>':'')
     +(flop.length?'<div class="sc2"><div class="sc2-t">&#128680; A SURVEILLER</div>'+flop.map(x=>'<div class="sr"><span class="sk">'+x.s.prenom+' '+x.s.nom+'</span><span class="sv2" style="color:'+(x.moy<10?'var(--r)':'var(--w)')+'">'+x.moy.toFixed(1)+'/20</span></div>').join('')+'</div>':'')
     +(absRank.length?'<div class="sc2"><div class="sc2-t">&#128197; ABSENCES FREQUENTES</div>'+absRank.map(x=>'<div class="sr"><span class="sk">'+x.s.prenom+' '+x.s.nom+'</span><span class="sv2" style="color:var(--r)">'+x.n+' abs.</span></div>').join('')+'</div>':'')
@@ -944,6 +1164,7 @@ function openSettingsModal(){
   document.getElementById('setMyMail').value=s.myMail||'pierre.perrez22@gmail.com'
   document.getElementById('setThomasMail').value=s.thomasMail||'thomas.noble05@orange.fr'
   document.getElementById('setContacts').value=s.contacts||''
+  document.getElementById('setTri').value=s.trimestre||'T1'
   document.getElementById('setUrl').value=s.ollamaUrl||''
   document.getElementById('setMod').value=s.ollamaModel||'mistral'
   openModal('moSet')
@@ -954,17 +1175,185 @@ function saveSet(){
     myMail:document.getElementById('setMyMail').value.trim(),
     thomasMail:document.getElementById('setThomasMail').value.trim(),
     contacts:document.getElementById('setContacts').value.trim(),
+    trimestre:document.getElementById('setTri').value||'T1',
     ollamaUrl:document.getElementById('setUrl').value.trim(),
     ollamaModel:document.getElementById('setMod').value.trim()||'mistral'
   })
   closeModal('moSet')
-  addMsg('j','Reglages enregistres avec succes.')
+  addMsg('j','Reglages enregistres avec succes. Trimestre actuel : '+DB.settings().trimestre+'.')
 }
 
 // ── MODALS ────────────────────────────────────────────────────────────────────
 function openModal(id){document.getElementById(id).classList.add('open')}
 function closeModal(id){document.getElementById(id).classList.remove('open')}
 document.addEventListener('click',e=>{if(e.target.classList.contains('mo'))e.target.classList.remove('open')})
+
+// ── OBJECTIFS ────────────────────────────────────────────────────────────────
+function openObjModal(sid){
+  document.getElementById('objSid').value=sid
+  document.getElementById('objAct').value=''
+  document.getElementById('objVal').value=''
+  // Pre-fill from known activities
+  const acts=[...new Set(DB.grades().filter(g=>g.sid===sid).map(g=>g.activite))]
+  if(acts.length)document.getElementById('objAct').value=acts[0]
+  openModal('moObj')
+}
+function saveObj(){
+  const sid=parseInt(document.getElementById('objSid').value)
+  const activite=document.getElementById('objAct').value.trim()
+  const objectif=parseFloat(document.getElementById('objVal').value)
+  if(!activite||isNaN(objectif)||objectif<0||objectif>20){alert('Activite et objectif (0-20) requis.');return}
+  DB.setObjectif(sid,activite,objectif)
+  closeModal('moObj')
+  selectStu(sid,stuTri)
+  showNotif('Objectif '+objectif+'/20 fixe pour '+activite,'var(--w)')
+}
+
+// ── IMPRESSION PDF ────────────────────────────────────────────────────────────
+function printStudentSheet(id){
+  const s=DB.students().find(x=>x.id===id);if(!s)return
+  const abs=DB.absences().filter(a=>a.sid===id)
+  const grd=DB.grades().filter(g=>g.sid===id)
+  const mat=DB.materials().filter(m=>m.sid===id)
+  const objs=DB.objectifs().filter(o=>o.sid===id)
+  const moy=grd.length?(grd.reduce((a,g)=>a+g.note/g.noteMax*20,0)/grd.length).toFixed(1):null
+  const pStyle='font-family:Arial,sans-serif;padding:16mm;color:#222;background:#fff'
+  const hStyle='color:#005577;border-bottom:2px solid #005577;padding-bottom:6px;margin-bottom:10px'
+  const thStyle='background:#005577;color:#fff;padding:6px 10px;text-align:left'
+  const tdStyle='padding:5px 10px;border:1px solid #ddd'
+  const secStyle='margin-top:18px'
+  const h2s='font-size:.95rem;color:#005577;border-bottom:1px solid #ddd;padding-bottom:4px;margin-bottom:8px'
+  let html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Fiche '+s.prenom+' '+s.nom+'</title></head>'
+    +'<body style="'+pStyle+'">'
+    +'<h1 style="'+hStyle+'">'+s.prenom+' '+s.nom+' — '+s.classe+'</h1>'
+    +'<p style="font-size:.9rem;color:#555">Moyenne generale : <strong>'+(moy?moy+'/20':'N/A')+'</strong> &nbsp;|&nbsp; Absences : <strong>'+abs.length+'</strong> &nbsp;|&nbsp; Oublis materiel : <strong>'+mat.length+'</strong></p>'
+    +(s.notes?'<p style="font-size:.85rem;color:#777;margin-top:6px">'+s.notes+'</p>':'')
+    +'<div style="'+secStyle+'"><h2 style="'+h2s+'">Notes</h2>'
+    +(grd.length?'<table width="100%" style="border-collapse:collapse"><tr><th style="'+thStyle+'">Activite</th><th style="'+thStyle+'">Note</th><th style="'+thStyle+'">Note/20</th><th style="'+thStyle+'">Objectif</th><th style="'+thStyle+'">Trimestre</th><th style="'+thStyle+'">Date</th><th style="'+thStyle+'">Commentaire</th></tr>'
+    +grd.map(g=>{const s20=(g.note/g.noteMax*20).toFixed(1);const obj=objs.find(o=>norm(o.activite)===norm(g.activite));return'<tr><td style="'+tdStyle+'">'+g.activite+'</td><td style="'+tdStyle+'">'+g.note+'/'+g.noteMax+'</td><td style="'+tdStyle+'">'+s20+'</td><td style="'+tdStyle+'">'+(obj?obj.objectif+'/20':'—')+'</td><td style="'+tdStyle+'">'+(g.tri||'—')+'</td><td style="'+tdStyle+'">'+g.date+'</td><td style="'+tdStyle+'">'+(g.commentaire||'')+'</td></tr>'}).join('')+'</table>'
+    :'<p style="color:#999">Aucune note.</p>')
+    +'</div>'
+    +'<div style="'+secStyle+'"><h2 style="'+h2s+'">Absences</h2>'
+    +(abs.length?'<table width="100%" style="border-collapse:collapse"><tr><th style="'+thStyle+'">Date</th><th style="'+thStyle+'">Justifiee</th><th style="'+thStyle+'">Trimestre</th><th style="'+thStyle+'">Commentaire</th></tr>'
+    +abs.map(a=>'<tr><td style="'+tdStyle+'">'+a.date+'</td><td style="'+tdStyle+'">'+(a.justifiee?'Oui':'Non')+'</td><td style="'+tdStyle+'">'+(a.tri||'—')+'</td><td style="'+tdStyle+'">'+(a.commentaire||'')+'</td></tr>').join('')+'</table>'
+    :'<p style="color:#999">Aucune absence.</p>')
+    +'</div>'
+    +'<div style="'+secStyle+'"><h2 style="'+h2s+'">Materiel oublie</h2>'
+    +(mat.length?'<table width="100%" style="border-collapse:collapse"><tr><th style="'+thStyle+'">Date</th><th style="'+thStyle+'">Trimestre</th><th style="'+thStyle+'">Description</th></tr>'
+    +mat.map(m=>'<tr><td style="'+tdStyle+'">'+m.date+'</td><td style="'+tdStyle+'">'+(m.tri||'—')+'</td><td style="'+tdStyle+'">'+(m.commentaire||'Oubli')+'</td></tr>').join('')+'</table>'
+    :'<p style="color:#999">Aucun oubli.</p>')
+    +'</div>'
+    +'<p style="margin-top:24px;font-size:.75rem;color:#aaa">Genere par J.A.R.V.I.S EPS &mdash; '+new Date().toLocaleDateString('fr-FR')+'</p>'
+    +'</body></html>'
+  const w=window.open('','_blank');if(!w){showNotif('Autorisez les popups pour imprimer.','var(--r)');return}
+  w.document.write(html);w.document.close();setTimeout(()=>{w.print()},400)
+}
+
+function printClassDashboard(){
+  const students=DB.students(),grades=DB.grades(),absences=DB.absences(),materials=DB.materials()
+  if(!students.length){showNotif('Aucun eleve a imprimer.','var(--r)');return}
+  const classes=[...new Set(students.map(s=>s.classe))].sort()
+  const thStyle='background:#005577;color:#fff;padding:6px 10px;text-align:left'
+  const tdStyle='padding:5px 10px;border:1px solid #ddd'
+  let html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Tableau de bord EPS</title></head>'
+    +'<body style="font-family:Arial,sans-serif;padding:12mm;color:#222;background:#fff">'
+    +'<h1 style="color:#005577;border-bottom:2px solid #005577;padding-bottom:6px">Tableau de bord EPS &mdash; '+new Date().toLocaleDateString('fr-FR')+'</h1>'
+    +classes.map(cl=>{
+      const cs=students.filter(s=>s.classe===cl)
+      const clAbsCount=absences.filter(a=>cs.find(s=>s.id===a.sid)).length
+      const clGrades=grades.filter(g=>cs.find(s=>s.id===g.sid))
+      const clMoy=clGrades.length?(clGrades.reduce((a,g)=>a+g.note/g.noteMax*20,0)/clGrades.length).toFixed(1):null
+      return'<div style="margin-top:20px"><h2 style="font-size:1rem;color:#005577">Classe '+cl+' &mdash; '+cs.length+' eleve(s)'+(clMoy?' &mdash; Moy: '+clMoy+'/20':'')+'</h2>'
+        +'<table width="100%" style="border-collapse:collapse"><tr><th style="'+thStyle+'">Prenom</th><th style="'+thStyle+'">Nom</th><th style="'+thStyle+'">Moyenne</th><th style="'+thStyle+'">Absences</th><th style="'+thStyle+'">Oublis</th></tr>'
+        +cs.map(s=>{
+          const sg=grades.filter(g=>g.sid===s.id)
+          const moy=sg.length?(sg.reduce((a,g)=>a+g.note/g.noteMax*20,0)/sg.length).toFixed(1):null
+          const na=absences.filter(a=>a.sid===s.id).length
+          const nm=materials.filter(m=>m.sid===s.id).length
+          return'<tr><td style="'+tdStyle+'">'+s.prenom+'</td><td style="'+tdStyle+'">'+s.nom+'</td><td style="'+tdStyle+'">'+(moy?moy+'/20':'—')+'</td><td style="'+tdStyle+'"'+(na>=3?' style="color:red;'+tdStyle+'"':'')+'>'+na+'</td><td style="'+tdStyle+'"'+(nm>=3?' style="color:orange"':'')+'>'+nm+'</td></tr>'
+        }).join('')+'</table></div>'
+    }).join('')
+    +'<p style="margin-top:20px;font-size:.75rem;color:#aaa">Genere par J.A.R.V.I.S EPS &mdash; '+new Date().toLocaleDateString('fr-FR')+'</p>'
+    +'</body></html>'
+  const w=window.open('','_blank');if(!w){showNotif('Autorisez les popups pour imprimer.','var(--r)');return}
+  w.document.write(html);w.document.close();setTimeout(()=>{w.print()},400)
+}
+
+// ── BULLETINS EN MASSE ───────────────────────────────────────────────────────
+function openBulletinsModal(){
+  const classes=[...new Set(DB.students().map(s=>s.classe))].sort()
+  if(!classes.length){showNotif('Ajoutez des eleves avant.','var(--r)');return}
+  const sel=document.getElementById('bulCls')
+  sel.innerHTML=classes.map(c=>'<option value="'+c+'">'+c+'</option>').join('')
+  const set=DB.settings()
+  document.getElementById('bulTri').value=set.trimestre||'T1'
+  renderBulletins(classes[0])
+  openModal('moBul')
+}
+function renderBulletins(classe){
+  if(!classe)return
+  const tri=document.getElementById('bulTri')?document.getElementById('bulTri').value:'all'
+  const students=DB.students().filter(s=>s.classe===classe)
+  const content=document.getElementById('bulContent')
+  if(!students.length){content.innerHTML='<p style="color:var(--td)">Aucun eleve.</p>';return}
+  const items=students.map(s=>{
+    const st={
+      absences:DB.absences().filter(a=>a.sid===s.id&&(tri==='all'||!a.tri||a.tri===tri)),
+      grades:DB.grades().filter(g=>g.sid===s.id&&(tri==='all'||!g.tri||g.tri===tri)),
+      materials:DB.materials().filter(m=>m.sid===s.id&&(tri==='all'||!m.tri||m.tri===tri)),
+      moy:null
+    }
+    if(st.grades.length)st.moy=st.grades.reduce((a,g)=>a+g.note/g.noteMax*20,0)/st.grades.length
+    const comment=bulletinComment(s,st)
+    return{s,comment,moy:st.moy}
+  })
+  content.innerHTML='<div style="display:flex;flex-direction:column;gap:6px">'
+    +items.map(({s,comment,moy})=>
+      '<div class="bul-item">'
+      +'<div class="bul-sname">'+s.prenom+' '+s.nom+(moy!==null?' — '+moy.toFixed(1)+'/20':'')+'</div>'
+      +'<div class="bul-txt">'+comment+'</div>'
+      +'</div>'
+    ).join('')+'</div>'
+}
+function copyBulletins(){
+  const classe=document.getElementById('bulCls').value
+  const tri=document.getElementById('bulTri').value
+  const students=DB.students().filter(s=>s.classe===classe)
+  const lines=students.map(s=>{
+    const st={
+      absences:DB.absences().filter(a=>a.sid===s.id&&(tri==='all'||!a.tri||a.tri===tri)),
+      grades:DB.grades().filter(g=>g.sid===s.id&&(tri==='all'||!g.tri||g.tri===tri)),
+      materials:DB.materials().filter(m=>m.sid===s.id&&(tri==='all'||!m.tri||m.tri===tri)),
+      moy:null
+    }
+    if(st.grades.length)st.moy=st.grades.reduce((a,g)=>a+g.note/g.noteMax*20,0)/st.grades.length
+    return s.prenom+' '+s.nom+(st.moy!==null?' ('+st.moy.toFixed(1)+'/20)':'')+' : '+bulletinComment(s,st)
+  }).join('\n\n')
+  navigator.clipboard.writeText(lines).then(()=>showNotif('Bulletins copies dans le presse-papiers !','var(--g)')).catch(()=>showNotif('Copie echouee — utilisez Export CSV.','var(--r)'))
+}
+function exportBulletins(){
+  const classe=document.getElementById('bulCls').value
+  const tri=document.getElementById('bulTri').value
+  const students=DB.students().filter(s=>s.classe===classe)
+  let csv='Prenom;Nom;Classe;Trimestre;Moyenne;Absences;Commentaire\n'
+  students.forEach(s=>{
+    const st={
+      absences:DB.absences().filter(a=>a.sid===s.id&&(tri==='all'||!a.tri||a.tri===tri)),
+      grades:DB.grades().filter(g=>g.sid===s.id&&(tri==='all'||!g.tri||g.tri===tri)),
+      materials:DB.materials().filter(m=>m.sid===s.id&&(tri==='all'||!m.tri||m.tri===tri)),
+      moy:null
+    }
+    if(st.grades.length)st.moy=st.grades.reduce((a,g)=>a+g.note/g.noteMax*20,0)/st.grades.length
+    const comment=bulletinComment(s,st).replace(/;/g,',')
+    csv+=s.prenom+';'+s.nom+';'+s.classe+';'+(tri==='all'?'Tout':tri)+';'+(st.moy?st.moy.toFixed(1):'')+';'+st.absences.length+';'+comment+'\n'
+  })
+  const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8'})
+  const url=URL.createObjectURL(blob)
+  const a=document.createElement('a');a.href=url
+  a.download='bulletins_'+classe.replace(/\s+/g,'_')+'_'+(tri==='all'?'all':tri)+'_'+new Date().toISOString().split('T')[0]+'.csv'
+  document.body.appendChild(a);a.click();document.body.removeChild(a)
+  setTimeout(()=>URL.revokeObjectURL(url),1000)
+}
 
 // ── ALERTS ────────────────────────────────────────────────────────────────────
 function getAlerts(){
@@ -1046,7 +1435,8 @@ function startSession(){
   const classe=document.getElementById('sesCls').value
   if(!date||!activite||!classe){showNotif('Remplissez tous les champs.','var(--r)');return}
   closeModal('moSes')
-  activeSession={date,activite:cap(activite),classe,entries:{}}
+  const tri=DB.settings().trimestre||'T1'
+  activeSession={date,activite:cap(activite),classe,tri,entries:{}}
   DB.students().filter(s=>s.classe===classe).forEach(s=>{activeSession.entries[s.id]={status:'present',mat:false}})
   renderSessionOverlay()
   document.getElementById('sesOverlay').classList.add('open')
@@ -1068,10 +1458,10 @@ function renderSessionOverlay(){
     return '<div class="ses-row '+rowCls+'">'
       +'<div class="ses-sname">'+s.prenom+' '+s.nom+'</div>'
       +'<div class="ses-btns">'
-      +'<button class="ses-btn sp'+(e.status==='present'?' on':'')+"' onclick=\"setSesStatus("+s.id+",'present')\">&#10003; Present</button>"
-      +'<button class="ses-btn saj'+(e.status==='absj'?' on':'')+"' onclick=\"setSesStatus("+s.id+",'absj')\">ABS-J</button>"
-      +'<button class="ses-btn sanj'+(e.status==='absnj'?' on':'')+"' onclick=\"setSesStatus("+s.id+",'absnj')\">ABS-NJ</button>"
-      +'<button class="ses-btn sm'+(e.mat?' on':'')+"' onclick=\"toggleSesMat("+s.id+")\">&#128188; Materiel</button>"
+      +'<button class="ses-btn sp'+(e.status==='present'?' on':'')+'" onclick="setSesStatus('+s.id+',\'present\')">&#10003; Present</button>'
+      +'<button class="ses-btn saj'+(e.status==='absj'?' on':'')+'" onclick="setSesStatus('+s.id+',\'absj\')">ABS-J</button>'
+      +'<button class="ses-btn sanj'+(e.status==='absnj'?' on':'')+'" onclick="setSesStatus('+s.id+',\'absnj\')">ABS-NJ</button>'
+      +'<button class="ses-btn sm'+(e.mat?' on':'')+'" onclick="toggleSesMat('+s.id+')">&#128188; Materiel</button>'
       +'</div></div>'
   }).join('')
   updateSesSummary()
@@ -1106,9 +1496,9 @@ function saveSession(){
   const ses=activeSession
   DB.students().filter(s=>s.classe===ses.classe).forEach(s=>{
     const e=ses.entries[s.id];if(!e)return
-    if(e.status==='absj')DB.addAbsence({sid:s.id,date:ses.date,justifiee:true,commentaire:ses.activite})
-    else if(e.status==='absnj')DB.addAbsence({sid:s.id,date:ses.date,justifiee:false,commentaire:ses.activite})
-    if(e.mat)DB.addMaterial({sid:s.id,date:ses.date,commentaire:'Oubli lors de '+ses.activite})
+    if(e.status==='absj')DB.addAbsence({sid:s.id,date:ses.date,tri:ses.tri||'T1',justifiee:true,commentaire:ses.activite})
+    else if(e.status==='absnj')DB.addAbsence({sid:s.id,date:ses.date,tri:ses.tri||'T1',justifiee:false,commentaire:ses.activite})
+    if(e.mat)DB.addMaterial({sid:s.id,date:ses.date,tri:ses.tri||'T1',commentaire:'Oubli lors de '+ses.activite})
   })
   const nbAbs=Object.values(ses.entries).filter(e=>e.status!=='present').length
   const nbMat=Object.values(ses.entries).filter(e=>e.mat).length
