@@ -9,6 +9,7 @@
 :root{--c:#00d4ff;--cd:#0099bb;--cg:rgba(0,212,255,.3);--d:#030d15;--d2:#071828;--d3:#0a2035;--t:#cce8f4;--td:#5a8fa8;--r:#ff4444;--g:#00ff88;--w:#ffaa00;--fn:'Orbitron',monospace;--fb:'Exo 2',sans-serif;}
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%;overflow:hidden;background:var(--d);color:var(--t);font-family:var(--fb)}
+/* LOCK */
 #lock{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at center,#071828 0%,#030d15 70%)}
 .grid-bg{position:absolute;inset:0;background-image:repeating-linear-gradient(0deg,transparent,transparent 49px,rgba(0,212,255,.03) 50px),repeating-linear-gradient(90deg,transparent,transparent 49px,rgba(0,212,255,.03) 50px);animation:gpulse 4s ease-in-out infinite}
 @keyframes gpulse{0%,100%{opacity:.5}50%{opacity:1}}
@@ -41,6 +42,7 @@ html,body{height:100%;overflow:hidden;background:var(--d);color:var(--t);font-fa
 .corners{position:absolute;inset:18px;pointer-events:none}
 .cn{position:absolute;width:28px;height:28px;border-color:var(--c);border-style:solid;opacity:.6}
 .cn.tl{top:0;left:0;border-width:2px 0 0 2px}.cn.tr{top:0;right:0;border-width:2px 2px 0 0}.cn.bl{bottom:0;left:0;border-width:0 0 2px 2px}.cn.br{bottom:0;right:0;border-width:0 2px 2px 0}
+/* APP */
 #app{display:none;flex-direction:column;height:100vh}
 .hdr{display:flex;align-items:center;justify-content:space-between;padding:0 22px;height:56px;background:linear-gradient(90deg,var(--d) 0%,var(--d2) 50%,var(--d) 100%);border-bottom:1px solid rgba(0,212,255,.2);flex-shrink:0}
 .hdr-l{display:flex;align-items:center;gap:12px}
@@ -59,7 +61,9 @@ html,body{height:100%;overflow:hidden;background:var(--d);color:var(--t);font-fa
 .btn-lock-s:hover{background:rgba(255,68,68,.1);border-color:var(--r)}
 .btn-set{background:transparent;border:1px solid rgba(0,212,255,.25);color:var(--td);padding:5px 9px;border-radius:4px;cursor:pointer;font-size:.82rem;transition:all .2s}
 .btn-set:hover{border-color:var(--c);color:var(--c)}
+/* VIEWS */
 .view{flex:1;overflow:hidden}
+/* CHAT */
 .chat-wrap{display:flex;flex-direction:column;height:calc(100vh - 56px)}
 .msgs{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:12px}
 .msgs::-webkit-scrollbar{width:3px}.msgs::-webkit-scrollbar-thumb{background:var(--cd)}
@@ -86,6 +90,7 @@ html,body{height:100%;overflow:hidden;background:var(--d);color:var(--t);font-fa
 .btn-mic{border-color:rgba(0,212,255,.3);background:transparent;color:var(--c)}
 .btn-mic:hover{background:var(--cg)}.btn-mic.on{border-color:var(--r);color:var(--r);animation:pred 1s infinite}
 .btn-send{border-color:var(--c);background:var(--c);color:var(--d)}.btn-send:hover{box-shadow:0 0 15px var(--cg)}
+/* STUDENTS */
 .stu-lay{display:flex;height:calc(100vh - 56px);overflow:hidden}
 .pnl{display:flex;flex-direction:column;overflow:hidden}
 .pnl-l{width:360px;flex-shrink:0;border-right:1px solid rgba(0,212,255,.15)}.pnl-r{flex:1;overflow-y:auto}
@@ -124,6 +129,7 @@ html,body{height:100%;overflow:hidden;background:var(--d);color:var(--t);font-fa
 .as{font-size:.72rem}.as.j{color:var(--g)}.as.nj{color:var(--r)}
 .mat-tag{font-size:.72rem;color:var(--w)}
 .btn-x{background:transparent;border:none;color:var(--r);cursor:pointer;font-size:.9rem;padding:2px 5px;opacity:.6;transition:opacity .2s}.btn-x:hover{opacity:1}
+/* STATS */
 .stat-wrap{padding:20px;overflow-y:auto;height:calc(100vh - 56px)}
 .stat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
 .sc2{background:var(--d2);border:1px solid rgba(0,212,255,.15);border-radius:8px;padding:16px;box-shadow:0 4px 20px rgba(0,0,0,.3)}
@@ -131,6 +137,7 @@ html,body{height:100%;overflow:hidden;background:var(--d);color:var(--t);font-fa
 .sr{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(0,212,255,.06);font-size:.82rem}.sr:last-child{border-bottom:none}
 .sk{color:var(--td)}.sv2{color:var(--t);font-weight:600}
 .di{padding:4px 7px;background:rgba(255,68,68,.08);border-radius:4px;font-size:.77rem;color:var(--r);margin-top:3px}
+/* MODALS */
 .mo{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center}.mo.open{display:flex}
 .mb{background:var(--d2);border:1px solid rgba(0,212,255,.3);border-radius:8px;padding:24px;width:480px;max-width:95vw;box-shadow:0 0 40px rgba(0,212,255,.15);animation:mi .2s ease;max-height:90vh;overflow-y:auto}
 @keyframes mi{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
@@ -144,13 +151,49 @@ html,body{height:100%;overflow:hidden;background:var(--d);color:var(--t);font-fa
 .fa{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
 .fa button{padding:8px 20px;border-radius:4px;cursor:pointer;font-family:var(--fb);font-size:.86rem;transition:all .2s}
 .fa .btn-cancel{background:transparent;border:1px solid rgba(255,255,255,.1);color:var(--td)}.fa .btn-cancel:hover{border-color:var(--td)}
+/* NOTIF */
 .notif{position:fixed;bottom:22px;right:22px;z-index:999;background:var(--d2);border:1px solid var(--g);border-radius:8px;padding:13px 18px;color:var(--g);font-size:.86rem;box-shadow:0 0 20px rgba(0,255,136,.2);animation:nfin .3s ease;max-width:320px}
 @keyframes nfin{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+/* STATE INDICATOR */
 .voice-state-bar{background:rgba(0,212,255,.08);border-bottom:1px solid rgba(0,212,255,.2);padding:6px 18px;font-size:.78rem;color:var(--c);display:none;align-items:center;gap:8px}
 .voice-state-bar.on{display:flex}
 .vsb-dot{width:8px;height:8px;border-radius:50%;background:var(--c);animation:blink 1s infinite}
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--d)}::-webkit-scrollbar-thumb{background:var(--cd);border-radius:2px}
 @media(max-width:700px){.lock-title{font-size:2rem}.stu-lay{flex-direction:column}.pnl-l{width:100%;height:40%}.sc{grid-template-columns:repeat(2,1fr)}.msg{max-width:92%}.hdr{padding:0 12px}.tabs .tab{padding:6px 10px;font-size:.75rem}}
+/* ── SESSION OVERLAY ── */
+#sesOverlay{position:fixed;inset:0;z-index:150;background:var(--d);display:none;flex-direction:column;overflow:hidden}
+#sesOverlay.open{display:flex}
+.ses-hdr{display:flex;justify-content:space-between;align-items:center;padding:13px 20px;border-bottom:1px solid rgba(0,212,255,.2);background:var(--d2);flex-shrink:0;gap:12px}
+.ses-hdr-info{display:flex;flex-direction:column;gap:3px;flex:1}
+.ses-htitle{font-family:var(--fn);font-size:.82rem;color:var(--c);letter-spacing:.1rem}
+.ses-hsub{font-size:.73rem;color:var(--td)}
+.ses-body{flex:1;overflow-y:auto;padding:16px}
+.ses-body::-webkit-scrollbar{width:3px}.ses-body::-webkit-scrollbar-thumb{background:var(--cd)}
+.ses-row{display:flex;align-items:center;justify-content:space-between;padding:9px 13px;border-radius:5px;margin-bottom:5px;border:1px solid rgba(0,212,255,.06);transition:background .15s}
+.ses-row.present{background:rgba(0,255,136,.04)}
+.ses-row.absj{background:rgba(255,68,68,.07);border-color:rgba(255,68,68,.12)}
+.ses-row.absnj{background:rgba(255,100,68,.09);border-color:rgba(255,80,50,.18)}
+.ses-row.matonly{background:rgba(255,170,0,.06);border-color:rgba(255,170,0,.12)}
+.ses-sname{font-size:.87rem;font-weight:600;min-width:160px}
+.ses-btns{display:flex;gap:5px;flex-wrap:wrap}
+.ses-btn{padding:5px 9px;border:1px solid;border-radius:4px;cursor:pointer;font-size:.73rem;background:transparent;transition:all .18s;font-family:var(--fb)}
+.ses-btn.sp{border-color:var(--g);color:var(--g)}.ses-btn.sp.on{background:rgba(0,255,136,.15);font-weight:700}
+.ses-btn.saj{border-color:var(--r);color:var(--r)}.ses-btn.saj.on{background:rgba(255,68,68,.15);font-weight:700}
+.ses-btn.sanj{border-color:#ff6030;color:#ff6030}.ses-btn.sanj.on{background:rgba(255,90,48,.15);font-weight:700}
+.ses-btn.sm{border-color:var(--w);color:var(--w)}.ses-btn.sm.on{background:rgba(255,170,0,.15);font-weight:700}
+.ses-footer{padding:12px 20px;border-top:1px solid rgba(0,212,255,.2);background:var(--d2);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;gap:10px}
+.ses-sum{font-size:.77rem;color:var(--td);flex:1}
+/* ── ALERTS ── */
+.al-r{display:inline-flex;align-items:center;gap:2px;padding:2px 5px;border-radius:8px;font-size:.57rem;font-family:var(--fn);background:rgba(255,68,68,.15);color:var(--r);border:1px solid rgba(255,68,68,.3)}
+.al-w{display:inline-flex;align-items:center;gap:2px;padding:2px 5px;border-radius:8px;font-size:.57rem;font-family:var(--fn);background:rgba(255,170,0,.15);color:var(--w);border:1px solid rgba(255,170,0,.3)}
+.alerts-wrap{background:var(--d2);border:1px solid rgba(255,68,68,.22);border-radius:8px;padding:14px;margin-bottom:16px}
+.alerts-ttl{font-family:var(--fn);font-size:.7rem;color:var(--r);letter-spacing:.1rem;margin-bottom:9px;display:flex;align-items:center;gap:8px}
+.al-item{display:flex;align-items:center;gap:9px;padding:6px 10px;border-radius:4px;margin-bottom:4px;font-size:.8rem}
+.al-item.r{background:rgba(255,68,68,.08);border-left:3px solid var(--r);color:var(--r)}
+.al-item.w{background:rgba(255,170,0,.08);border-left:3px solid var(--w);color:var(--w)}
+/* ── CHART ── */
+.chart-box{background:var(--d2);border:1px solid rgba(0,212,255,.12);border-radius:6px;padding:10px 12px;margin-bottom:14px}
+.chart-lbl{font-family:var(--fn);font-size:.62rem;color:var(--td);letter-spacing:.07rem;margin-bottom:6px}
 </style>
 </head>
 <body>
@@ -213,6 +256,7 @@ html,body{height:100%;overflow:hidden;background:var(--d);color:var(--t);font-fa
             <input id="srch" placeholder="Rechercher..." oninput="filterStu()">
             <select id="fCls" onchange="filterStu()"><option value="">Toutes les classes</option></select>
             <button class="btn-p" onclick="openAddStu()">+ Ajouter un eleve</button>
+            <button class="btn-p" style="border-color:var(--w);color:var(--w)" onclick="openNewSessionModal()">&#127939; Nouvelle seance</button>
           </div>
         </div>
         <div class="slist" id="slist"></div>
@@ -223,6 +267,23 @@ html,body{height:100%;overflow:hidden;background:var(--d);color:var(--t);font-fa
   <div class="view" id="v-stats" style="display:none"><div class="stat-wrap" id="statWrap"></div></div>
 </div>
 
+<!-- SESSION OVERLAY -->
+<div id="sesOverlay">
+  <div class="ses-hdr">
+    <div class="ses-hdr-info">
+      <div class="ses-htitle" id="sesTitleTxt">Seance</div>
+      <div class="ses-hsub" id="sesSubTxt">...</div>
+    </div>
+    <div class="ses-sum" id="sesSummary"></div>
+    <div style="display:flex;gap:8px">
+      <button class="btn-p" style="border-color:var(--g);color:var(--g)" onclick="saveSession()">&#128190; Enregistrer</button>
+      <button class="btn-lock-s" onclick="cancelSession()">&#10005; Annuler</button>
+    </div>
+  </div>
+  <div class="ses-body" id="sesBody"></div>
+</div>
+
+<!-- MODALS -->
 <div class="mo" id="moStu">
   <div class="mb">
     <div class="mh"><h3 id="mStuTitle">Eleve</h3><button onclick="closeModal('moStu')">&times;</button></div>
@@ -261,9 +322,18 @@ html,body{height:100%;overflow:hidden;background:var(--d);color:var(--t);font-fa
   <div class="mb">
     <div class="mh"><h3>&#128188; Materiel oublie</h3><button onclick="closeModal('moMat')">&times;</button></div>
     <div class="fr"><label>Date</label><input type="date" id="matD"></div>
-    <div class="fr"><label>Description (materiel oublie)</label><textarea id="matC" rows="2" placeholder="Ex: chaussures de sport, tenue EPS..."></textarea></div>
+    <div class="fr"><label>Materiel oublie (description)</label><textarea id="matC" rows="2" placeholder="Ex: chaussures de sport, tenue EPS..."></textarea></div>
     <input type="hidden" id="matSid">
     <div class="fa"><button class="btn-cancel" onclick="closeModal('moMat')">Annuler</button><button class="btn-p" onclick="saveMat()">Enregistrer</button></div>
+  </div>
+</div>
+<div class="mo" id="moSes">
+  <div class="mb">
+    <div class="mh"><h3>&#127939; Nouvelle Seance</h3><button onclick="closeModal('moSes')">&times;</button></div>
+    <div class="fr"><label>Date</label><input type="date" id="sesDate"></div>
+    <div class="fr"><label>Activite (ex: Handball, Natation, Course...)</label><input id="sesAct" placeholder="Handball, Course, Natation..."></div>
+    <div class="fr"><label>Classe</label><select id="sesCls" style="background:rgba(0,212,255,.05);border:1px solid rgba(0,212,255,.2);border-radius:4px;color:var(--t);padding:8px 10px;font-family:var(--fb);font-size:.86rem;outline:none"><option value="">Choisir une classe...</option></select></div>
+    <div class="fa"><button class="btn-cancel" onclick="closeModal('moSes')">Annuler</button><button class="btn-p" onclick="startSession()">Commencer la seance</button></div>
   </div>
 </div>
 <div class="mo" id="moSet">
@@ -271,9 +341,9 @@ html,body{height:100%;overflow:hidden;background:var(--d);color:var(--t);font-fa
     <div class="mh"><h3>Reglages Jarvis</h3><button onclick="closeModal('moSet')">&times;</button></div>
     <div class="fr"><label>Code vocal de deverrouillage</label><input id="setCd" placeholder="Ex: jarvis activation"></div>
     <p style="font-size:.78rem;color:var(--c);margin:8px 0 5px;font-family:var(--fn);letter-spacing:.08rem">CONTACTS EMAIL</p>
-    <div class="fr"><label>Mon email (commande : envoie moi un recapitulatif)</label><input id="setMyMail" placeholder="votre@email.fr"></div>
-    <div class="fr"><label>Email Thomas (commande : envoie a Thomas)</label><input id="setThomasMail" placeholder="thomas@email.fr"></div>
-    <p style="font-size:.73rem;color:var(--td);margin:6px 0 3px">Autres contacts (prenom=email, un par ligne)</p>
+    <div class="fr"><label>Mon email (« envoie moi un recapitulatif »)</label><input id="setMyMail" placeholder="votre@email.fr"></div>
+    <div class="fr"><label>Email Thomas (« envoie a Thomas »)</label><input id="setThomasMail" placeholder="thomas@email.fr"></div>
+    <p style="font-size:.73rem;color:var(--td);margin:6px 0 3px">Autres contacts (format : prenom=email, un par ligne)</p>
     <div class="fr"><textarea id="setContacts" rows="3" placeholder="jean=jean@gmail.com&#10;marie=marie@gmail.com"></textarea></div>
     <div class="fr"><label>Ollama URL (optionnel, IA locale)</label><input id="setUrl" placeholder="http://localhost:11434"></div>
     <div class="fr"><label>Modele Ollama</label><input id="setMod" placeholder="mistral ou llama3.2"></div>
@@ -283,6 +353,8 @@ html,body{height:100%;overflow:hidden;background:var(--d);color:var(--t);font-fa
 
 <script>
 'use strict'
+
+// ── DATABASE ─────────────────────────────────────────────────────────────────
 const DB={
   get:k=>JSON.parse(localStorage.getItem(k)||'null'),
   set:(k,v)=>localStorage.setItem(k,JSON.stringify(v)),
@@ -302,9 +374,17 @@ const DB={
   addMaterial(m){const arr=DB.materials();m.id=DB.nextId(arr);arr.push(m);DB.set('j_mat',arr)},
   delMaterial(id){DB.set('j_mat',DB.materials().filter(x=>x.id!==id))},
 }
+
+// ── UTILS ─────────────────────────────────────────────────────────────────────
 function norm(s){return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim()}
-function showNotif(msg){const n=document.createElement('div');n.className='notif';n.textContent=msg;document.body.appendChild(n);setTimeout(()=>n.remove(),4000)}
+function showNotif(msg,col){
+  const n=document.createElement('div');n.className='notif'
+  if(col)n.style.borderColor=col
+  n.textContent=msg;document.body.appendChild(n);setTimeout(()=>n.remove(),4000)
+}
 function cap(s){return s?s.charAt(0).toUpperCase()+s.slice(1):''}
+
+// ── CONTACTS ──────────────────────────────────────────────────────────────────
 function getContacts(){
   const s=DB.settings()
   const map={'moi':s.myMail||'pierre.perrez22@gmail.com','pierre':s.myMail||'pierre.perrez22@gmail.com','thomas':s.thomasMail||'thomas.noble05@orange.fr'}
@@ -316,30 +396,39 @@ function findContact(m){
   for(const[name,email] of Object.entries(contacts)){if(m.includes(norm(name)))return{name,email}}
   return null
 }
+
+// ── CSV / EXCEL EXPORT (semicolons for French Excel) ──────────────────────────
 function generateRecapText(){
   const students=DB.students(),grades=DB.grades(),absences=DB.absences(),materials=DB.materials()
   const date=new Date().toLocaleDateString('fr-FR')
-  let t='RECAPITULATIF EPS - '+date+'\n'+'='.repeat(50)+'\n\n'
+  let t='RECAPITULATIF EPS - '+date+'\n'+'='.repeat(55)+'\n\n'
   if(!students.length)return t+'Aucun eleve enregistre.\n'
   const classes=[...new Set(students.map(s=>s.classe))].sort()
   classes.forEach(cl=>{
     const cs=students.filter(s=>s.classe===cl)
-    t+='CLASSE: '+cl+'\n'+'-'.repeat(35)+'\n'
+    const moys=cs.map(s=>{const sg=grades.filter(g=>g.sid===s.id);return sg.length?sg.reduce((a,g)=>a+g.note/g.noteMax*20,0)/sg.length:null}).filter(x=>x!==null)
+    const moyC=moys.length?(moys.reduce((a,b)=>a+b,0)/moys.length).toFixed(1):null
+    t+='CLASSE: '+cl+(moyC?' | Moyenne: '+moyC+'/20':'')+"\n"+'-'.repeat(40)+'\n'
     cs.forEach(s=>{
       const sg=grades.filter(g=>g.sid===s.id),sa=absences.filter(a=>a.sid===s.id),sm=materials.filter(m=>m.sid===s.id)
       const moy=sg.length?(sg.reduce((a,g)=>a+g.note/g.noteMax*20,0)/sg.length).toFixed(1):'--'
       t+='  '+s.prenom+' '+s.nom+' | Moy: '+moy+'/20 | Abs: '+sa.length+' | Materiel: '+sm.length+'\n'
-      sg.forEach(g=>{t+='    - '+g.activite+': '+g.note+'/'+g.noteMax+(g.commentaire?' ('+g.commentaire+')':'')+'\n'})
+      sg.forEach(g=>{t+='    Note - '+g.activite+': '+g.note+'/'+g.noteMax+(g.commentaire?' ('+g.commentaire+')':'')+"\n"})
     })
     t+='\n'
   })
-  return t+'---\nEnvoye par Jarvis EPS\n'
+  t+='---\nEnvoye par Jarvis EPS\n'
+  return t
 }
+
 function generateAndDownloadCSV(){
   const students=DB.students(),grades=DB.grades(),absences=DB.absences(),materials=DB.materials()
   const date=new Date().toISOString().split('T')[0]
   const S=';'
+
   let csv='RECAPITULATIF EPS - '+new Date().toLocaleDateString('fr-FR')+'\n\n'
+
+  // Section 1 : recap eleves
   csv+='RECAP ELEVES\n'
   csv+='Prenom'+S+'Nom'+S+'Classe'+S+'Moyenne /20'+S+'Nb Notes'+S+'Total Absences'+S+'Justifiees'+S+'Non Justifiees'+S+'Materiel Oublie\n'
   students.forEach(s=>{
@@ -348,6 +437,8 @@ function generateAndDownloadCSV(){
     const aj=sa.filter(a=>a.justifiee).length
     csv+=s.prenom+S+s.nom+S+s.classe+S+moy+S+sg.length+S+sa.length+S+aj+S+(sa.length-aj)+S+sm.length+'\n'
   })
+
+  // Section 2 : notes
   csv+='\nDETAIL DES NOTES\n'
   csv+='Prenom'+S+'Nom'+S+'Classe'+S+'Activite'+S+'Note'+S+'Note Max'+S+'Note /20'+S+'Date'+S+'Commentaire\n'
   students.forEach(s=>{
@@ -355,6 +446,8 @@ function generateAndDownloadCSV(){
       csv+=s.prenom+S+s.nom+S+s.classe+S+g.activite+S+g.note+S+g.noteMax+S+(g.note/g.noteMax*20).toFixed(2)+S+g.date+S+(g.commentaire||'')+'\n'
     })
   })
+
+  // Section 3 : absences
   csv+='\nDETAIL DES ABSENCES\n'
   csv+='Prenom'+S+'Nom'+S+'Classe'+S+'Date'+S+'Justifiee'+S+'Commentaire\n'
   students.forEach(s=>{
@@ -362,6 +455,8 @@ function generateAndDownloadCSV(){
       csv+=s.prenom+S+s.nom+S+s.classe+S+a.date+S+(a.justifiee?'Oui':'Non')+S+(a.commentaire||'')+'\n'
     })
   })
+
+  // Section 4 : materiel oublie
   csv+='\nMATERIEL OUBLIE\n'
   csv+='Prenom'+S+'Nom'+S+'Classe'+S+'Date'+S+'Description\n'
   students.forEach(s=>{
@@ -369,6 +464,7 @@ function generateAndDownloadCSV(){
       csv+=s.prenom+S+s.nom+S+s.classe+S+m.date+S+(m.commentaire||'')+'\n'
     })
   })
+
   const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8'})
   const url=URL.createObjectURL(blob)
   const a=document.createElement('a')
@@ -376,14 +472,19 @@ function generateAndDownloadCSV(){
   document.body.appendChild(a);a.click();document.body.removeChild(a)
   setTimeout(()=>URL.revokeObjectURL(url),1000)
 }
+
 function openMailClient(toEmail,toName){
   const subject=encodeURIComponent('Recapitulatif EPS - '+new Date().toLocaleDateString('fr-FR'))
   const body=encodeURIComponent(generateRecapText())
   setTimeout(()=>{window.location.href='mailto:'+toEmail+'?subject='+subject+'&body='+body},600)
 }
 function sendRecap(toEmail,toName){
-  generateAndDownloadCSV();openMailClient(toEmail,toName);showNotif('Fichier CSV telecharge + email ouvert pour '+toName)
+  generateAndDownloadCSV()
+  openMailClient(toEmail,toName)
+  showNotif('Fichier CSV telecharge + email ouvert pour '+toName)
 }
+
+// ── UNLOCK ────────────────────────────────────────────────────────────────────
 let unlockRec=null
 function startUnlock(){
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition
@@ -404,7 +505,11 @@ function startUnlock(){
     })
     if(match)unlockOk();else unlockFail()
   }
-  unlockRec.onerror=ev=>{setLS('Erreur micro ('+ev.error+'). Tapez le code ci-dessous.');document.getElementById('lStatus').style.color='var(--w)';setTimeout(()=>{setLS('');document.getElementById('lStatus').style.color='var(--c)'},4000)}
+  unlockRec.onerror=ev=>{
+    setLS('Erreur micro ('+ev.error+'). Tapez le code ci-dessous.')
+    document.getElementById('lStatus').style.color='var(--w)'
+    setTimeout(()=>{setLS('');document.getElementById('lStatus').style.color='var(--c)'},4000)
+  }
   unlockRec.onend=()=>{btn.classList.remove('listening');lbl.textContent='Activer la reconnaissance vocale';wv.style.display='none'}
   unlockRec.start()
 }
@@ -413,7 +518,12 @@ function checkTypedCode(){
   const typed=norm(input.value||'')
   const code=norm(DB.settings().code||'jarvis activation')
   if(typed===code){input.value='';setLS('Code correct !');unlockOk()}
-  else{setLS('Code incorrect. Reessayez.');document.getElementById('lStatus').style.color='var(--r)';input.value='';speak('Code incorrect.');setTimeout(()=>{setLS('');document.getElementById('lStatus').style.color='var(--c)'},3000)}
+  else{
+    setLS('Code incorrect. Reessayez.')
+    document.getElementById('lStatus').style.color='var(--r)'
+    input.value='';speak('Code incorrect.')
+    setTimeout(()=>{setLS('');document.getElementById('lStatus').style.color='var(--c)'},3000)
+  }
 }
 function unlockOk(){
   setLS('Acces autorise !')
@@ -423,12 +533,19 @@ function unlockOk(){
     document.getElementById('app').style.display='flex'
     addMsg('j','Bonjour Pierre ! Tous mes systemes sont operationnels. Comment puis-je vous aider ?')
     renderStudents()
-    setTimeout(()=>speak('Bonjour Pierre, comment allez-vous ? Est-ce que je peux faire quelque chose pour vous ?'),400)
+    setTimeout(()=>speak('Bonjour Pierre, comment allez-vous ? Est-ce que je peux faire quelque chose pour vous ?'),300)
   },800)
 }
-function unlockFail(){setLS('Code incorrect. Reessayez.');document.getElementById('lStatus').style.color='var(--r)';speak('Code non reconnu.');setTimeout(()=>{setLS('');document.getElementById('lStatus').style.color='var(--c)'},3500)}
+function unlockFail(){
+  setLS('Code incorrect. Reessayez.')
+  document.getElementById('lStatus').style.color='var(--r)'
+  speak('Code non reconnu.')
+  setTimeout(()=>{setLS('');document.getElementById('lStatus').style.color='var(--c)'},3500)
+}
 function setLS(t){document.getElementById('lStatus').textContent=t}
 function lockSys(){stopMic();window.speechSynthesis&&window.speechSynthesis.cancel();document.getElementById('app').style.display='none';document.getElementById('lock').style.display='flex';setLS('');document.getElementById('lStatus').style.color='var(--c)';voiceState=null;updateVSBar()}
+
+// ── TTS ───────────────────────────────────────────────────────────────────────
 function speak(text){
   if(!window.speechSynthesis)return
   window.speechSynthesis.cancel()
@@ -441,14 +558,18 @@ function speak(text){
   window.speechSynthesis.speak(u)
 }
 if(window.speechSynthesis)window.speechSynthesis.onvoiceschanged=()=>window.speechSynthesis.getVoices()
+
+// ── VOICE STATE MACHINE (ajout eleve vocal) ───────────────────────────────────
 let voiceState=null
 function updateVSBar(){
   const bar=document.getElementById('vsBar'),txt=document.getElementById('vsBarTxt')
   if(!voiceState){bar.classList.remove('on');return}
   bar.classList.add('on')
-  const labels={prenom:"Dites le PRENOM de l'eleve...",nom:'Dites son NOM de famille...',classe:'Dites sa CLASSE (ex: 3eme A)...'}
+  const labels={prenom:"En attente du PRENOM de l'eleve...",nom:"En attente du NOM de famille...",classe:"En attente de la CLASSE..."}
   txt.textContent=labels[voiceState.step]||''
 }
+
+// ── CHAT ──────────────────────────────────────────────────────────────────────
 let chatHist=[],micRec=null,micOn=false
 function addMsg(role,txt){
   const box=document.getElementById('msgs'),d=document.createElement('div')
@@ -458,54 +579,128 @@ function addMsg(role,txt){
 }
 function addThink(){const box=document.getElementById('msgs'),d=document.createElement('div');d.id='think';d.className='msg';d.innerHTML='<div class="av">J</div><div class="bub"><div class="dots"><span></span><span></span><span></span></div></div>';box.appendChild(d);box.scrollTop=box.scrollHeight}
 function rmThink(){const e=document.getElementById('think');if(e)e.remove()}
+
 async function send(){
   const inp=document.getElementById('ci'),txt=inp.value.trim()
   if(!txt)return;inp.value=''
   addMsg('u',txt)
+
+  // ── VOICE STATE MACHINE pour ajout d'eleve ──
   if(voiceState){
     const trimmed=txt.trim()
-    if(voiceState.step==='prenom'){voiceState.data.prenom=cap(trimmed);voiceState.step='nom';updateVSBar();const r='Quel est son nom de famille ?';addMsg('j',r);speak(r);chatHist.push({role:'user',content:txt},{role:'assistant',content:r});return}
-    if(voiceState.step==='nom'){voiceState.data.nom=cap(trimmed);voiceState.step='classe';updateVSBar();const r='Dans quelle classe est-il ? (ex: 3eme A, 5eme B...)';addMsg('j',r);speak(r);chatHist.push({role:'user',content:txt},{role:'assistant',content:r});return}
-    if(voiceState.step==='classe'){voiceState.data.classe=trimmed.toUpperCase();DB.addStudent(voiceState.data);const r='Parfait ! '+voiceState.data.prenom+' '+voiceState.data.nom+' a ete ajoute en '+voiceState.data.classe+'. Je peux faire autre chose pour vous ?';addMsg('j',r);speak(r);chatHist.push({role:'user',content:txt},{role:'assistant',content:r});voiceState=null;updateVSBar();renderStudents();return}
+    if(voiceState.step==='prenom'){
+      voiceState.data.prenom=cap(trimmed)
+      voiceState.step='nom'
+      updateVSBar()
+      const r='Quel est son nom de famille ?'
+      addMsg('j',r);speak(r);chatHist.push({role:'user',content:txt},{role:'assistant',content:r})
+      return
+    }
+    if(voiceState.step==='nom'){
+      voiceState.data.nom=cap(trimmed)
+      voiceState.step='classe'
+      updateVSBar()
+      const r='Dans quelle classe est-il ? (ex: 3eme A, 5eme B...)'
+      addMsg('j',r);speak(r);chatHist.push({role:'user',content:txt},{role:'assistant',content:r})
+      return
+    }
+    if(voiceState.step==='classe'){
+      voiceState.data.classe=trimmed.toUpperCase()
+      DB.addStudent(voiceState.data)
+      const r='Parfait ! '+voiceState.data.prenom+' '+voiceState.data.nom+' a ete ajoute en '+voiceState.data.classe+'. Je peux faire autre chose pour vous ?'
+      addMsg('j',r);speak(r);chatHist.push({role:'user',content:txt},{role:'assistant',content:r})
+      voiceState=null;updateVSBar();renderStudents()
+      return
+    }
   }
+
   chatHist.push({role:'user',content:txt});addThink()
   let reply;const set=DB.settings()
   if(set.ollamaUrl&&set.ollamaModel)reply=await callOllama(txt,set.ollamaUrl,set.ollamaModel).catch(()=>null)
   if(!reply)reply=jarvisRespond(txt)
   rmThink();addMsg('j',reply);chatHist.push({role:'assistant',content:reply});speak(reply)
 }
+
 async function callOllama(msg,url,model){
   const students=DB.students(),absences=DB.absences(),grades=DB.grades(),materials=DB.materials()
   let ctx=''
-  students.forEach(s=>{const sa=absences.filter(a=>a.sid===s.id),sg=grades.filter(g=>g.sid===s.id),sm=materials.filter(m=>m.sid===s.id);const moy=sg.length?(sg.reduce((a,g)=>a+g.note/g.noteMax*20,0)/sg.length).toFixed(1):'pas de note';ctx+='- '+s.prenom+' '+s.nom+' ('+s.classe+'): '+sa.length+' absence(s), moyenne '+moy+'/20, '+sm.length+' materiel oublie\n'})
-  const system='Tu es Jarvis, assistant IA d un professeur d EPS francais nomme Pierre. Tu parles uniquement francais. Donnees eleves:\n'+(ctx||'Aucun eleve.')
+  students.forEach(s=>{
+    const sa=absences.filter(a=>a.sid===s.id),sg=grades.filter(g=>g.sid===s.id),sm=materials.filter(m=>m.sid===s.id)
+    const moy=sg.length?(sg.reduce((a,g)=>a+g.note/g.noteMax*20,0)/sg.length).toFixed(1):'pas de note'
+    ctx+='- '+s.prenom+' '+s.nom+' ('+s.classe+'): '+sa.length+' absence(s), moyenne '+moy+'/20, '+sm.length+' materiel oublie\n'
+  })
+  const system='Tu es Jarvis, assistant IA d un professeur d EPS francais nomme Pierre. Tu parles uniquement francais, tu es serviable et precis. Donnees eleves:\n'+(ctx||'Aucun eleve.')
   const body={model,messages:[{role:'system',content:system},...chatHist.slice(-8).map(h=>({role:h.role==='u'?'user':h.role,content:h.content})),{role:'user',content:msg}],stream:false}
   const r=await fetch(url+'/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
   const d=await r.json();return d.message?.content||null
 }
+
+// ── JARVIS AI ─────────────────────────────────────────────────────────────────
 function jarvisRespond(msg){
   const m=norm(msg),students=DB.students(),absences=DB.absences(),grades=DB.grades(),materials=DB.materials()
-  const getStats=s=>{const sa=absences.filter(a=>a.sid===s.id),sg=grades.filter(g=>g.sid===s.id),sm=materials.filter(mat=>mat.sid===s.id);return{absences:sa,grades:sg,materials:sm,moy:sg.length?sg.reduce((a,g)=>a+g.note/g.noteMax*20,0)/sg.length:null}}
-  if(/(ajoute|ajouter|nouveau|nouvel|enregistre|inscris).*(eleve)/.test(m)||/(nouvel).*(etudiant)/.test(m)){voiceState={step:'prenom',data:{}};updateVSBar();return 'Bien sur ! Quel est le prenom de l eleve ?'}
+  const getStats=s=>{
+    const sa=absences.filter(a=>a.sid===s.id),sg=grades.filter(g=>g.sid===s.id),sm=materials.filter(mat=>mat.sid===s.id)
+    return{absences:sa,grades:sg,materials:sm,moy:sg.length?sg.reduce((a,g)=>a+g.note/g.noteMax*20,0)/sg.length:null}
+  }
+
+  // ── NOUVELLE SEANCE ──
+  if(/(nouvelle|demarrer|lancer|commencer|ouvrir).*(seance|cours|session)/.test(m)||/(seance|cours|session).*(nouvelle|commencer|demarrer)/.test(m)){
+    const acts=['handball','natation','course','athletisme','football','foot','basket','gym','volley','rugby','badminton','endurance','acrosport','escalade','danse','judo','musculation']
+    const cls=[...new Set(students.map(s=>s.classe))]
+    const act=acts.find(a=>m.includes(a))
+    const cl=cls.find(c=>m.includes(norm(c)))
+    if(act&&cl){
+      activeSession={date:new Date().toISOString().split('T')[0],activite:cap(act),classe:cl,entries:{}}
+      students.filter(s=>s.classe===cl).forEach(s=>{activeSession.entries[s.id]={status:'present',mat:false}})
+      renderSessionOverlay();document.getElementById('sesOverlay').classList.add('open')
+      return'Seance '+cap(act)+' pour la classe '+cl+' demarre ! Marquez les presences et les absences.'
+    }
+    openNewSessionModal()
+    return'Ouvrez le formulaire pour demarrer une nouvelle seance. Precisez l activite et la classe !'
+  }
+
+  // ── AJOUT D'ELEVE PAR VOIX ──
+  if(/(ajoute|ajouter|nouveau|nouvel|enregistre|inscris).*(eleve)/.test(m)||/(nouvel|ajouter).*(etudiant|enfant)/.test(m)){
+    voiceState={step:'prenom',data:{}}
+    updateVSBar()
+    return 'Bien sur ! Quel est le prenom de l eleve ?'
+  }
+
+  // ── EMAIL / RECAP ──
   const isRecapCmd=/(recapitulatif|recap|bilan|synthese)/.test(m)
   const isMailCmd=/(envoie|envoi|envoyer|mail|email)/.test(m)
   if(isRecapCmd||(isMailCmd&&/(thomas|moi|pierre|mail|email)/.test(m))){
     const contact=findContact(m)
     if(contact){sendRecap(contact.email,contact.name);return 'Je genere le fichier Excel et prepare l email pour '+contact.name+'. Votre messagerie va s ouvrir. Cliquez sur Envoyer !'}
     const myMail=DB.settings().myMail||'pierre.perrez22@gmail.com'
-    sendRecap(myMail,'vous');return 'Je genere votre fichier Excel et prepare l email. Votre messagerie va s ouvrir dans quelques secondes !'
+    sendRecap(myMail,'vous');return 'Je genere votre fichier Excel et prepare l email. Votre messagerie va s ouvrir. Cliquez sur Envoyer !'
   }
+
+  // ── ELEVE MENTIONNE ──
   for(const s of students){
     const fn=norm(s.prenom),ln=norm(s.nom)
     if(m.includes(fn)||m.includes(ln)){
       const st=getStats(s)
       if(/(commentaire|bulletin|appreciation|redige)/.test(m))return bulletinComment(s,st)
-      if(/(absence|absent)/.test(m)){if(!st.absences.length)return s.prenom+' '+s.nom+' n a aucune absence.';const j=st.absences.filter(a=>a.justifiee).length;return s.prenom+' '+s.nom+' a '+st.absences.length+' absence(s), dont '+j+' justifiee(s).'}
-      if(/(materiel|oubli|equipement)/.test(m)){if(!st.materials.length)return s.prenom+' '+s.nom+' n a aucun oubli de materiel.';return s.prenom+' '+s.nom+' a oublie son materiel '+st.materials.length+' fois.'}
-      if(/(note|moyenne|performance|resultat)/.test(m)){if(!st.grades.length)return 'Aucune note pour '+s.prenom+' '+s.nom+'.';const acts=st.grades.map(g=>g.activite+': '+g.note+'/'+g.noteMax).join(', ');return s.prenom+' '+s.nom+' : moyenne '+st.moy.toFixed(1)+'/20. '+acts+'.'}
+      if(/(absence|absent)/.test(m)){
+        if(!st.absences.length)return s.prenom+' '+s.nom+' n a aucune absence enregistree.'
+        const j=st.absences.filter(a=>a.justifiee).length
+        return s.prenom+' '+s.nom+' a '+st.absences.length+' absence(s), dont '+j+' justifiee(s).'
+      }
+      if(/(materiel|oubli|equipement)/.test(m)){
+        if(!st.materials.length)return s.prenom+' '+s.nom+' n a aucun oubli de materiel.'
+        return s.prenom+' '+s.nom+' a oublie son materiel '+st.materials.length+' fois.'
+      }
+      if(/(note|moyenne|performance|resultat)/.test(m)){
+        if(!st.grades.length)return 'Aucune note pour '+s.prenom+' '+s.nom+'.'
+        const acts=st.grades.map(g=>g.activite+': '+g.note+'/'+g.noteMax).join(', ')
+        return s.prenom+' '+s.nom+' : moyenne '+st.moy.toFixed(1)+'/20. '+acts+'.'
+      }
       return studentReport(s,st)
     }
   }
+
+  // ── CLASSE MENTIONNEE ──
   const classes=[...new Set(students.map(s=>s.classe))]
   for(const cl of classes){
     if(m.includes(norm(cl))){
@@ -514,33 +709,99 @@ function jarvisRespond(msg){
       const moyC=moys.length?(moys.reduce((a,b)=>a+b,0)/moys.length).toFixed(1):''
       const nbAbs=absences.filter(a=>cs.find(s=>s.id===a.sid)).length
       const nbMat=materials.filter(a=>cs.find(s=>s.id===a.sid)).length
-      return 'Classe '+cl+' : '+cs.length+' eleve(s)'+(moyC?', moyenne '+moyC+'/20':'')+', '+nbAbs+' absence(s), '+nbMat+' oubli(s) de materiel.'
+      return 'Classe '+cl+' : '+cs.length+' eleve(s)'+(moyC?', moyenne '+moyC+'/20':'')+', '+nbAbs+' absence(s), '+nbMat+' oubli(s) materiel.'
     }
   }
+
+  // ── MOTS-CLES GENERAUX ──
   if(/(bonjour|salut|hello|bonsoir|coucou)/.test(m))return['Bonjour Pierre ! Tous mes systemes sont operationnels. Comment puis-je vous aider ?','Bonsoir Pierre ! Ravi de vous retrouver.'][Math.floor(Math.random()*2)]
-  if(/(comment tu vas|ca va|tu vas bien|comment allez)/.test(m))return'Tous mes systemes fonctionnent a 100%. Et vous Pierre ?'
+  if(/(comment tu vas|ca va|tu vas bien|comment allez)/.test(m))return'Tous mes systemes fonctionnent a 100%. Et vous Pierre, comment allez-vous ?'
   if(/(merci)/.test(m))return'Avec plaisir Pierre. C est pour cela que je suis la.'
-  if(/(materiel|oubli).*(plus|frequent|rang)/.test(m)||/(qui.*oublie|oublie.*plus)/.test(m)){if(!materials.length)return'Aucun oubli de materiel enregistre.';const ranked=students.map(s=>({s,n:materials.filter(a=>a.sid===s.id).length})).filter(x=>x.n>0).sort((a,b)=>b.n-a.n);return ranked.length?'Plus d oublis : '+ranked.slice(0,5).map(x=>x.s.prenom+' '+x.s.nom+' ('+x.n+')').join(', ')+'.' :'Aucun oubli.'}
-  if(/(qui a le plus|plus d.absence)/.test(m)){if(!absences.length)return'Aucune absence.';const ranked=students.map(s=>({s,n:absences.filter(a=>a.sid===s.id).length})).filter(x=>x.n>0).sort((a,b)=>b.n-a.n);return ranked.length?'Plus d absences : '+ranked.slice(0,5).map(x=>x.s.prenom+' '+x.s.nom+' ('+x.n+')').join(', ')+'.' :'Aucune absence.'}
-  if(/(difficulte|note basse|probleme)/.test(m)){const diff=students.map(s=>{const sg=grades.filter(g=>g.sid===s.id);if(!sg.length)return null;const moy=sg.reduce((a,g)=>a+g.note/g.noteMax*20,0)/sg.length;return moy<10?{s,moy}:null}).filter(Boolean);return diff.length?'En difficulte : '+diff.map(x=>x.s.prenom+' '+x.s.nom+' ('+x.moy.toFixed(1)+'/20)').join(', ')+'.' :'Aucun eleve sous 10/20.'}
-  if(/(meilleur|top|champion|premier)/.test(m)){const ranked=students.map(s=>{const sg=grades.filter(g=>g.sid===s.id);return sg.length?{s,moy:sg.reduce((a,g)=>a+g.note/g.noteMax*20,0)/sg.length}:null}).filter(Boolean).sort((a,b)=>b.moy-a.moy);return ranked.length?'Meilleurs : '+ranked.slice(0,3).map((x,i)=>(i+1)+'. '+x.s.prenom+' '+x.s.nom+' ('+x.moy.toFixed(1)+'/20)').join(', ')+'.' :'Aucune note.'}
-  if(/(combien|nombre|effectif)/.test(m)){if(!students.length)return'Aucun eleve.';const cls=[...new Set(students.map(s=>s.classe))];return'Vous avez '+students.length+' eleve(s) en '+cls.length+' classe(s) : '+cls.join(', ')+'.'}
-  if(/(heure|date|aujourd)/.test(m)){const now=new Date();return'Il est '+now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})+' le '+now.toLocaleDateString('fr-FR')+'.'}
-  if(/(aide|help|que peux|commande)/.test(m))return'Je peux : ajouter un eleve a la voix (dites "ajouter un eleve"), donner les stats d un eleve ou d une classe, generer des commentaires de bulletin, et envoyer un recapitulatif par email !'
+  if(/(materiel|oubli).*(plus|frequent|souvent|rang)/.test(m)||/(qui.*oublie|oublie.*plus)/.test(m)){
+    if(!materials.length)return'Aucun oubli de materiel enregistre.'
+    const ranked=students.map(s=>({s,n:materials.filter(a=>a.sid===s.id).length})).filter(x=>x.n>0).sort((a,b)=>b.n-a.n)
+    return ranked.length?'Plus d oublis : '+ranked.slice(0,5).map(x=>x.s.prenom+' '+x.s.nom+' ('+x.n+')').join(', ')+'.' :'Aucun oubli.'
+  }
+  if(/(qui a le plus|plus d.absence)/.test(m)){
+    if(!absences.length)return'Aucune absence enregistree.'
+    const ranked=students.map(s=>({s,n:absences.filter(a=>a.sid===s.id).length})).filter(x=>x.n>0).sort((a,b)=>b.n-a.n)
+    return ranked.length?'Plus d absences : '+ranked.slice(0,5).map(x=>x.s.prenom+' '+x.s.nom+' ('+x.n+')').join(', ')+'.' :'Aucune absence.'
+  }
+  if(/(difficulte|note basse|probleme|en dessous)/.test(m)){
+    const diff=students.map(s=>{const sg=grades.filter(g=>g.sid===s.id);if(!sg.length)return null;const moy=sg.reduce((a,g)=>a+g.note/g.noteMax*20,0)/sg.length;return moy<10?{s,moy}:null}).filter(Boolean)
+    return diff.length?'En difficulte : '+diff.map(x=>x.s.prenom+' '+x.s.nom+' ('+x.moy.toFixed(1)+'/20)').join(', ')+'.' :'Aucun eleve sous 10/20.'
+  }
+  if(/(meilleur|top|champion|premier|excel)/.test(m)){
+    const ranked=students.map(s=>{const sg=grades.filter(g=>g.sid===s.id);return sg.length?{s,moy:sg.reduce((a,g)=>a+g.note/g.noteMax*20,0)/sg.length}:null}).filter(Boolean).sort((a,b)=>b.moy-a.moy)
+    return ranked.length?'Meilleurs : '+ranked.slice(0,3).map((x,i)=>(i+1)+'. '+x.s.prenom+' '+x.s.nom+' ('+x.moy.toFixed(1)+'/20)').join(', ')+'.' :'Aucune note.'
+  }
+  if(/(combien|nombre|effectif)/.test(m)){
+    if(!students.length)return'Aucun eleve.'
+    const cls=[...new Set(students.map(s=>s.classe))]
+    return'Vous avez '+students.length+' eleve(s) en '+cls.length+' classe(s) : '+cls.join(', ')+'.'
+  }
+  if(/(heure|date|aujourd)/.test(m)){
+    const now=new Date()
+    return'Il est '+now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})+' le '+now.toLocaleDateString('fr-FR')+'.'
+  }
+  if(/(aide|help|que peux|commande|fonction)/.test(m))return'Je peux : ajouter un eleve a la voix (dites "ajouter un eleve"), donner les infos d un eleve, les stats d une classe, generer des commentaires de bulletin, et envoyer un recapitulatif par email. Dites "envoie moi un recapitulatif" !'
   if(!students.length)return'Aucun eleve enregistre. Dites "ajouter un eleve" ou allez dans l onglet Eleves.'
   return'Je suis a votre service Pierre. Dites-moi le nom d un eleve, d une classe, ou "ajouter un eleve". Je peux aussi vous envoyer un recapitulatif !'
 }
-function studentReport(s,st){let r=s.prenom+' '+s.nom+', '+s.classe+'. ';r+=st.moy!==null?'Moyenne : '+st.moy.toFixed(1)+'/20. ':'Pas encore de note. ';if(st.absences.length){const j=st.absences.filter(a=>a.justifiee).length;r+=st.absences.length+' absence(s) ('+j+' justifiee(s)). '}else r+='Aucune absence. ';if(st.materials.length)r+=st.materials.length+' oubli(s) de materiel. ';if(st.grades.length)r+='Activites : '+[...new Set(st.grades.map(g=>g.activite))].join(', ')+'.';return r}
-function bulletinComment(s,st){const p=s.prenom,moy=st.moy,abs=st.absences.length,mat=st.materials.length;let c;if(moy===null)c=p+' participe aux cours d EPS.';else if(moy>=16)c=p+' fait preuve d un niveau excellent. Felicitations !';else if(moy>=13)c=p+' presente de bons resultats ('+moy.toFixed(1)+'/20). Engagement satisfaisant.';else if(moy>=10)c=p+' atteint les objectifs ('+moy.toFixed(1)+'/20). Des efforts reguliers amelioreraient ses performances.';else if(moy>=7)c=p+' doit s investir davantage ('+moy.toFixed(1)+'/20). Travail regulier necessaire.';else c='Resultats insuffisants ('+moy.toFixed(1)+'/20). Travail serieux indispensable.';if(abs>5)c+=' Les absences repetees ('+abs+') nuisent a la progression.';if(mat>3)c+=' Les oublis de materiel frequents ('+mat+') sont a corriger.';return c}
+
+function studentReport(s,st){
+  let r=s.prenom+' '+s.nom+', '+s.classe+'. '
+  r+=st.moy!==null?'Moyenne : '+st.moy.toFixed(1)+'/20. ':'Pas encore de note. '
+  if(st.absences.length){const j=st.absences.filter(a=>a.justifiee).length;r+=st.absences.length+' absence(s) ('+j+' justifiee(s)). '}
+  else r+='Aucune absence. '
+  if(st.materials.length)r+=st.materials.length+' oubli(s) de materiel. '
+  if(st.grades.length)r+='Activites : '+[...new Set(st.grades.map(g=>g.activite))].join(', ')+'.'
+  return r
+}
+function bulletinComment(s,st){
+  const p=s.prenom,moy=st.moy,abs=st.absences.length;let c
+  if(moy===null)c=p+' participe aux cours d EPS.'
+  else if(moy>=16)c=p+' fait preuve d un niveau excellent. Felicitations !'
+  else if(moy>=13)c=p+' presente de bons resultats ('+moy.toFixed(1)+'/20). Engagement satisfaisant.'
+  else if(moy>=10)c=p+' atteint les objectifs ('+moy.toFixed(1)+'/20). Des efforts reguliers amelioreraient ses performances.'
+  else if(moy>=7)c=p+' doit s investir davantage ('+moy.toFixed(1)+'/20). Un travail regulier est necessaire.'
+  else c='Resultats insuffisants ('+moy.toFixed(1)+'/20). Un travail serieux est indispensable.'
+  if(abs>5)c+=' Les absences repetees ('+abs+') nuisent a la progression.'
+  if(st.materials.length>3)c+=' Les oublis de materiel frequents ('+st.materials.length+') sont a corriger.'
+  return c
+}
+
+// ── MICRO ─────────────────────────────────────────────────────────────────────
 function toggleMic(){micOn?stopMic():startMic()}
-function startMic(){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){addMsg('j','Utilisez Google Chrome pour le micro.');return};micRec=new SR();micRec.lang='fr-FR';micRec.interimResults=false;micRec.onstart=()=>{micOn=true;document.getElementById('btnMic').classList.add('on');document.getElementById('vviz').style.display='flex'};micRec.onresult=e=>{document.getElementById('ci').value=e.results[0][0].transcript;stopMic();send()};micRec.onerror=micRec.onend=stopMic;window.speechSynthesis&&window.speechSynthesis.cancel();micRec.start()}
+function startMic(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition
+  if(!SR){addMsg('j','Utilisez Google Chrome pour le micro.');return}
+  micRec=new SR();micRec.lang='fr-FR';micRec.interimResults=false
+  micRec.onstart=()=>{micOn=true;document.getElementById('btnMic').classList.add('on');document.getElementById('vviz').style.display='flex'}
+  micRec.onresult=e=>{document.getElementById('ci').value=e.results[0][0].transcript;stopMic();send()}
+  micRec.onerror=micRec.onend=stopMic
+  window.speechSynthesis&&window.speechSynthesis.cancel()
+  micRec.start()
+}
 function stopMic(){micOn=false;document.getElementById('btnMic').classList.remove('on');document.getElementById('vviz').style.display='none';if(micRec){try{micRec.stop()}catch(e){}micRec=null}}
 document.addEventListener('keydown',e=>{if(e.code==='Space'&&e.target.tagName!=='INPUT'&&e.target.tagName!=='TEXTAREA'){e.preventDefault();toggleMic()}})
-function showTab(name){['chat','students','stats'].forEach(n=>{document.getElementById('t-'+n).classList.toggle('on',n===name);document.getElementById('v-'+n).style.display=n===name?'':'none'});if(name==='students')renderStudents();if(name==='stats')renderStats()}
+
+// ── TABS ──────────────────────────────────────────────────────────────────────
+function showTab(name){
+  ['chat','students','stats'].forEach(n=>{
+    document.getElementById('t-'+n).classList.toggle('on',n===name)
+    document.getElementById('v-'+n).style.display=n===name?'':'none'
+  })
+  if(name==='students')renderStudents()
+  if(name==='stats')renderStats()
+}
+
+// ── STUDENTS UI ───────────────────────────────────────────────────────────────
 let selId=null
 function renderStudents(){
   const list=DB.students(),srch=norm(document.getElementById('srch').value||''),fcls=document.getElementById('fCls').value
-  const cls=[...new Set(list.map(s=>s.classe))].sort(),fEl=document.getElementById('fCls'),cur=fEl.value
+  const cls=[...new Set(list.map(s=>s.classe))].sort()
+  const fEl=document.getElementById('fCls'),cur=fEl.value
   fEl.innerHTML='<option value="">Toutes les classes</option>'
   cls.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;if(c===cur)o.selected=true;fEl.appendChild(o)})
   const filtered=list.filter(s=>{const nm=norm(s.prenom+' '+s.nom);return(!fcls||s.classe===fcls)&&(!srch||nm.includes(srch))})
@@ -550,50 +811,319 @@ function renderStudents(){
     const sa=abs.filter(a=>a.sid===s.id),sg=grd.filter(g=>g.sid===s.id),sm=mat.filter(m=>m.sid===s.id)
     const moy=sg.length?(sg.reduce((a,g)=>a+g.note/g.noteMax*20,0)/sg.length).toFixed(1):null
     const sel=s.id===selId?'sel':''
-    return '<div class="si '+sel+'" onclick="selectStu('+s.id+')">'+'<div><div class="sn">'+s.prenom+' '+s.nom+'</div><div class="sm">'+s.classe+'</div></div>'+'<div class="bgs">'+(moy?'<span class="bg m">'+moy+'/20</span>':'')+'<span class="bg '+(sa.length?'a':'ok')+'">'+sa.length+' abs</span>'+(sm.length?'<span class="bg mat">'+sm.length+' mat</span>':'')+'</div></div>'
+    const unjAbs=sa.filter(a=>!a.justifiee).length
+    const hasGrDrop=sg.length>=2&&(()=>{const so=[...sg].sort((a,b)=>new Date(b.date)-new Date(a.date));const last=so[0].note/so[0].noteMax*20;const prev=so[1].note/so[1].noteMax*20;return prev-last>=3})()
+    return '<div class="si '+sel+'" onclick="selectStu('+s.id+'")>'
+      +'<div><div class="sn">'+s.prenom+' '+s.nom+'</div><div class="sm">'+s.classe+'</div></div>'
+      +'<div class="bgs">'
+      +(moy?'<span class="bg m">'+moy+'/20</span>':'')
+      +'<span class="bg '+(sa.length?'a':'ok')+'">'+sa.length+' abs</span>'
+      +(sm.length?'<span class="bg mat">'+sm.length+' mat</span>':'')
+      +(unjAbs>=3?'<span class="al-r">&#9888; '+unjAbs+'NJ</span>':'')
+      +(sm.length>=3?'<span class="al-w">&#9888; mat</span>':'')
+      +(hasGrDrop?'<span class="al-r">&#11015;</span>':'')
+      +'</div></div>'
   }).join('')
 }
 function filterStu(){renderStudents()}
 function selectStu(id){
   selId=id;renderStudents()
   const s=DB.students().find(x=>x.id===id);if(!s)return
-  const abs=DB.absences().filter(a=>a.sid===id),grd=DB.grades().filter(g=>g.sid===id),mat=DB.materials().filter(m=>m.sid===id)
+  const abs=DB.absences().filter(a=>a.sid===id)
+  const grd=DB.grades().filter(g=>g.sid===id)
+  const mat=DB.materials().filter(m=>m.sid===id)
   const moy=grd.length?grd.reduce((a,g)=>a+g.note/g.noteMax*20,0)/grd.length:null
-  const moyS=moy!==null?moy.toFixed(1):'--',moyC=moy!==null&&moy<10?'r':moy!==null?'g':'',absIj=abs.filter(a=>!a.justifiee).length
-  const grHtml=grd.length?grd.map(g=>{const s20=(g.note/g.noteMax*20).toFixed(1),lo=parseFloat(s20)<10?' lo':'';return'<div class="gi"><div><div class="ga">'+g.activite+'</div><div class="gc">'+g.date+(g.commentaire?' — '+g.commentaire:'')+'</div></div><div style="display:flex;align-items:center;gap:8px"><span class="gv'+lo+'">'+g.note+'/'+g.noteMax+' ('+s20+'/20)</span><button class="btn-x" onclick="delGr('+g.id+')">&times;</button></div></div>'}).join(''):'<p style="color:var(--td);font-size:.82rem">Aucune note.</p>'
-  const abHtml=abs.length?abs.map(a=>{const cls=a.justifiee?'j':'nj',lbl=a.justifiee?'Justifiee':'Non justifiee';return'<div class="ai"><div><div style="font-size:.84rem">'+a.date+'</div>'+(a.commentaire?'<div class="gc">'+a.commentaire+'</div>':'')+'</div><div style="display:flex;align-items:center;gap:8px"><span class="as '+cls+'">'+lbl+'</span><button class="btn-x" onclick="delAbs('+a.id+')">&times;</button></div></div>'}).join(''):'<p style="color:var(--td);font-size:.82rem">Aucune absence.</p>'
-  const matHtml=mat.length?mat.map(m=>{return'<div class="mi"><div><div style="font-size:.84rem">'+m.date+'</div>'+(m.commentaire?'<div class="gc">'+m.commentaire+'</div>':'')+'</div><div style="display:flex;align-items:center;gap:8px"><span class="mat-tag">&#128188; Oubli</span><button class="btn-x" onclick="delMat('+m.id+')">&times;</button></div></div>'}).join(''):'<p style="color:var(--td);font-size:.82rem">Aucun oubli enregistre.</p>'
-  document.getElementById('det').innerHTML='<div class="det"><div class="det-hdr"><div><div class="det-name">'+s.prenom+' '+s.nom+'</div><div class="det-cls">'+s.classe+(s.dateNaissance?' — Ne(e) le '+s.dateNaissance:'')+'</div>'+(s.notes?'<div style="font-size:.77rem;color:var(--td);margin-top:4px">'+s.notes+'</div>':'')+'</div><div class="det-acts"><button class="bs e" onclick="openEditStu('+s.id+')">Modifier</button><button class="bs d" onclick="delStu('+s.id+')">Supprimer</button></div></div><div class="sc"><div class="scard"><div class="sv '+moyC+'">'+moyS+'</div><div class="sl">MOYENNE /20</div></div><div class="scard"><div class="sv '+(abs.length>5?'r':'')+'">'+abs.length+'</div><div class="sl">ABSENCES</div></div><div class="scard"><div class="sv '+(mat.length>3?'r':'w')+'">'+mat.length+'</div><div class="sl">MATERIEL OUBLIE</div></div></div><div class="sec">NOTES <button class="bs e" onclick="openAddGr('+s.id+')">+ Note</button></div>'+grHtml+'<div class="sec">ABSENCES <button class="bs e" onclick="openAddAbs('+s.id+')">+ Absence</button></div>'+abHtml+'<div class="sec">MATERIEL OUBLIE <button class="bs e" onclick="openAddMat('+s.id+')">+ Materiel</button></div>'+matHtml+'</div>'
+  const moyS=moy!==null?moy.toFixed(1):'--'
+  const moyC=moy!==null&&moy<10?'r':moy!==null?'g':''
+  const absIj=abs.filter(a=>!a.justifiee).length
+
+  const grHtml=grd.length?grd.map(g=>{
+    const s20=(g.note/g.noteMax*20).toFixed(1),lo=parseFloat(s20)<10?' lo':''
+    return '<div class="gi"><div><div class="ga">'+g.activite+'</div><div class="gc">'+g.date+(g.commentaire?' — '+g.commentaire:'')+'</div></div>'
+      +'<div style="display:flex;align-items:center;gap:8px"><span class="gv'+lo+'">'+g.note+'/'+g.noteMax+' ('+s20+'/20)</span>'
+      +'<button class="btn-x" onclick="delGr('+g.id+')">&times;</button></div></div>'
+  }).join(''):'<p style="color:var(--td);font-size:.82rem">Aucune note.</p>'
+
+  const abHtml=abs.length?abs.map(a=>{
+    const cls=a.justifiee?'j':'nj',lbl=a.justifiee?'Justifiee':'Non justifiee'
+    return '<div class="ai"><div><div style="font-size:.84rem">'+a.date+'</div>'+(a.commentaire?'<div class="gc">'+a.commentaire+'</div>':'')+'</div>'
+      +'<div style="display:flex;align-items:center;gap:8px"><span class="as '+cls+'">'+lbl+'</span>'
+      +'<button class="btn-x" onclick="delAbs('+a.id+')">&times;</button></div></div>'
+  }).join(''):'<p style="color:var(--td);font-size:.82rem">Aucune absence.</p>'
+
+  const matHtml=mat.length?mat.map(m=>{
+    return '<div class="mi"><div><div style="font-size:.84rem">'+m.date+'</div>'+(m.commentaire?'<div class="gc">'+m.commentaire+'</div>':'')+'</div>'
+      +'<div style="display:flex;align-items:center;gap:8px"><span class="mat-tag">&#128188; Oubli</span>'
+      +'<button class="btn-x" onclick="delMat('+m.id+')">&times;</button></div></div>'
+  }).join(''):'<p style="color:var(--td);font-size:.82rem">Aucun oubli enregistre.</p>'
+
+  document.getElementById('det').innerHTML=
+    '<div class="det">'
+    +'<div class="det-hdr"><div>'
+    +'<div class="det-name">'+s.prenom+' '+s.nom+'</div>'
+    +'<div class="det-cls">'+s.classe+(s.dateNaissance?' — Ne(e) le '+s.dateNaissance:'')+'</div>'
+    +(s.notes?'<div style="font-size:.77rem;color:var(--td);margin-top:4px">'+s.notes+'</div>':'')
+    +'</div><div class="det-acts">'
+    +'<button class="bs e" onclick="openEditStu('+s.id+')">Modifier</button>'
+    +'<button class="bs d" onclick="delStu('+s.id+')">Supprimer</button>'
+    +'</div></div>'
+    +'<div class="sc">'
+    +'<div class="scard"><div class="sv '+moyC+'">'+moyS+'</div><div class="sl">MOYENNE /20</div></div>'
+    +'<div class="scard"><div class="sv '+(abs.length>5?'r':'')+'">'+abs.length+'</div><div class="sl">ABSENCES</div></div>'
+    +'<div class="scard"><div class="sv '+(mat.length>3?'r':'w')+'">'+mat.length+'</div><div class="sl">MATERIEL OUBLIE</div></div>'
+    +'</div>'
+    +(grd.length>=2?drawGradeChart(grd):'')
+    +'<div class="sec">NOTES <button class="bs e" onclick="openAddGr('+s.id+')">+ Note</button></div>'+grHtml
+    +'<div class="sec">ABSENCES <button class="bs e" onclick="openAddAbs('+s.id+')">+ Absence</button></div>'+abHtml
+    +'<div class="sec">MATERIEL OUBLIE <button class="bs e" onclick="openAddMat('+s.id+')">+ Materiel</button></div>'+matHtml
+    +'</div>'
 }
+
+// ── CRUD ──────────────────────────────────────────────────────────────────────
 function openAddStu(){document.getElementById('mStuTitle').textContent='Ajouter un eleve';['sId','sP','sN','sCl','sD','sNo'].forEach(i=>document.getElementById(i).value='');openModal('moStu')}
 function openEditStu(id){const s=DB.students().find(x=>x.id===id);if(!s)return;document.getElementById('mStuTitle').textContent='Modifier';document.getElementById('sId').value=s.id;document.getElementById('sP').value=s.prenom;document.getElementById('sN').value=s.nom;document.getElementById('sCl').value=s.classe;document.getElementById('sD').value=s.dateNaissance||'';document.getElementById('sNo').value=s.notes||'';openModal('moStu')}
 function saveStu(){const id=document.getElementById('sId').value,s={prenom:document.getElementById('sP').value,nom:document.getElementById('sN').value,classe:document.getElementById('sCl').value,dateNaissance:document.getElementById('sD').value||null,notes:document.getElementById('sNo').value||null};if(!s.prenom||!s.nom||!s.classe){alert('Prenom, nom et classe requis.');return};if(id){s.id=parseInt(id);DB.updStudent(s)}else DB.addStudent(s);closeModal('moStu');renderStudents();if(id)selectStu(parseInt(id))}
 function delStu(id){if(!confirm('Supprimer cet eleve et toutes ses donnees ?'))return;DB.delStudent(id);selId=null;document.getElementById('det').innerHTML='<div class="det-ph"><div class="ico">&#128104;&#8205;&#127891;</div><p>Selectionnez un eleve</p></div>';renderStudents()}
+
 function openAddGr(sid){document.getElementById('gSid').value=sid;document.getElementById('gA').value='';document.getElementById('gN').value='';document.getElementById('gM').value='20';document.getElementById('gD').value=new Date().toISOString().split('T')[0];document.getElementById('gC').value='';openModal('moGr')}
 function saveGr(){const sid=parseInt(document.getElementById('gSid').value),note=parseFloat(document.getElementById('gN').value),noteMax=parseFloat(document.getElementById('gM').value),activite=document.getElementById('gA').value;if(!activite||isNaN(note)){alert('Activite et note requises.');return};DB.addGrade({sid,activite,note,noteMax,date:document.getElementById('gD').value,commentaire:document.getElementById('gC').value||null});closeModal('moGr');selectStu(sid);renderStudents()}
 function delGr(id){if(!confirm('Supprimer cette note ?'))return;DB.delGrade(id);if(selId){selectStu(selId);renderStudents()}}
+
 function openAddAbs(sid){document.getElementById('aSid').value=sid;document.getElementById('aD').value=new Date().toISOString().split('T')[0];document.getElementById('aJ').checked=false;document.getElementById('aC').value='';openModal('moAbs')}
 function saveAbs(){const sid=parseInt(document.getElementById('aSid').value);DB.addAbsence({sid,date:document.getElementById('aD').value,justifiee:document.getElementById('aJ').checked,commentaire:document.getElementById('aC').value||null});closeModal('moAbs');selectStu(sid);renderStudents()}
 function delAbs(id){if(!confirm('Supprimer cette absence ?'))return;DB.delAbsence(id);if(selId){selectStu(selId);renderStudents()}}
+
 function openAddMat(sid){document.getElementById('matSid').value=sid;document.getElementById('matD').value=new Date().toISOString().split('T')[0];document.getElementById('matC').value='';openModal('moMat')}
 function saveMat(){const sid=parseInt(document.getElementById('matSid').value);DB.addMaterial({sid,date:document.getElementById('matD').value,commentaire:document.getElementById('matC').value||null});closeModal('moMat');selectStu(sid);renderStudents()}
 function delMat(id){if(!confirm('Supprimer cet oubli ?'))return;DB.delMaterial(id);if(selId){selectStu(selId);renderStudents()}}
+
+// ── STATS ─────────────────────────────────────────────────────────────────────
 function renderStats(){
   const students=DB.students(),absences=DB.absences(),grades=DB.grades(),materials=DB.materials(),w=document.getElementById('statWrap')
   if(!students.length){w.innerHTML='<p style="color:var(--td);padding:22px">Ajoutez des eleves pour voir les stats.</p>';return}
   const classes=[...new Set(students.map(s=>s.classe))].sort()
-  const clCards=classes.map(cl=>{const cs=students.filter(s=>s.classe===cl);const moys=cs.map(s=>{const sg=grades.filter(g=>g.sid===s.id);return sg.length?sg.reduce((a,g)=>a+g.note/g.noteMax*20,0)/sg.length:null}).filter(x=>x!==null);const moyC=moys.length?(moys.reduce((a,b)=>a+b,0)/moys.length).toFixed(1):null;const nbAbs=absences.filter(a=>cs.find(s=>s.id===a.sid)).length;const nbMat=materials.filter(a=>cs.find(s=>s.id===a.sid)).length;const diff=cs.filter(s=>{const sg=grades.filter(g=>g.sid===s.id);return sg.length&&sg.reduce((a,g)=>a+g.note/g.noteMax*20,0)/sg.length<10});return'<div class="sc2"><div class="sc2-t">Classe '+cl+'</div><div class="sr"><span class="sk">Eleves</span><span class="sv2">'+cs.length+'</span></div><div class="sr"><span class="sk">Absences</span><span class="sv2" style="color:'+(nbAbs>10?'var(--r)':'var(--t)')+'">'+nbAbs+'</span></div><div class="sr"><span class="sk">Moyenne</span><span class="sv2" style="color:'+(moyC&&parseFloat(moyC)<10?'var(--r)':'var(--g)')+'">'+(moyC?moyC+'/20':'--')+'</span></div><div class="sr"><span class="sk">Materiel oublie</span><span class="sv2" style="color:'+(nbMat>5?'var(--w)':'var(--t)')+'">'+nbMat+'</span></div>'+(diff.length?'<div style="margin-top:8px"><div style="font-size:.7rem;color:var(--td);margin-bottom:5px">EN DIFFICULTE</div>'+diff.map(s=>'<div class="di">'+s.prenom+' '+s.nom+'</div>').join('')+'</div>':'')+'</div>'}).join('')
+
+  const clCards=classes.map(cl=>{
+    const cs=students.filter(s=>s.classe===cl)
+    const moys=cs.map(s=>{const sg=grades.filter(g=>g.sid===s.id);return sg.length?sg.reduce((a,g)=>a+g.note/g.noteMax*20,0)/sg.length:null}).filter(x=>x!==null)
+    const moyC=moys.length?(moys.reduce((a,b)=>a+b,0)/moys.length).toFixed(1):null
+    const nbAbs=absences.filter(a=>cs.find(s=>s.id===a.sid)).length
+    const nbMat=materials.filter(a=>cs.find(s=>s.id===a.sid)).length
+    const diff=cs.filter(s=>{const sg=grades.filter(g=>g.sid===s.id);return sg.length&&sg.reduce((a,g)=>a+g.note/g.noteMax*20,0)/sg.length<10})
+    return '<div class="sc2"><div class="sc2-t">Classe '+cl+'</div>'
+      +'<div class="sr"><span class="sk">Eleves</span><span class="sv2">'+cs.length+'</span></div>'
+      +'<div class="sr"><span class="sk">Absences</span><span class="sv2" style="color:'+(nbAbs>10?'var(--r)':'var(--t)')+'">'+nbAbs+'</span></div>'
+      +'<div class="sr"><span class="sk">Moy. classe</span><span class="sv2" style="color:'+(moyC&&parseFloat(moyC)<10?'var(--r)':'var(--g)')+'">'+(moyC?moyC+'/20':'--')+'</span></div>'
+      +'<div class="sr"><span class="sk">Materiel oublie</span><span class="sv2" style="color:'+(nbMat>5?'var(--w)':'var(--t)')+'">'+nbMat+'</span></div>'
+      +(diff.length?'<div style="margin-top:8px"><div style="font-size:.7rem;color:var(--td);margin-bottom:5px">EN DIFFICULTE</div>'+diff.map(s=>'<div class="di">'+s.prenom+' '+s.nom+'</div>').join('')+'</div>':'')
+      +'</div>'
+  }).join('')
+
   const withG=students.map(s=>{const sg=grades.filter(g=>g.sid===s.id);return sg.length?{s,moy:sg.reduce((a,g)=>a+g.note/g.noteMax*20,0)/sg.length}:null}).filter(Boolean)
-  const top=[...withG].sort((a,b)=>b.moy-a.moy).slice(0,3),flop=[...withG].sort((a,b)=>a.moy-b.moy).slice(0,3)
+  const top=[...withG].sort((a,b)=>b.moy-a.moy).slice(0,3)
+  const flop=[...withG].sort((a,b)=>a.moy-b.moy).slice(0,3)
   const absRank=students.map(s=>({s,n:absences.filter(a=>a.sid===s.id).length})).filter(x=>x.n>0).sort((a,b)=>b.n-a.n).slice(0,5)
   const matRank=students.map(s=>({s,n:materials.filter(a=>a.sid===s.id).length})).filter(x=>x.n>0).sort((a,b)=>b.n-a.n).slice(0,5)
-  w.innerHTML='<h2 style="font-family:var(--fn);font-size:.8rem;color:var(--c);letter-spacing:.14rem;margin-bottom:16px">TABLEAU DE BORD — '+new Date().toLocaleDateString('fr-FR')+'</h2><div class="stat-grid">'+clCards+(top.length?'<div class="sc2"><div class="sc2-t">&#127942; TOP PERFORMANCES</div>'+top.map((x,i)=>'<div class="sr"><span class="sk">'+(i+1)+'. '+x.s.prenom+' '+x.s.nom+'</span><span class="sv2" style="color:var(--g)">'+x.moy.toFixed(1)+'/20</span></div>').join('')+'</div>':'')+(flop.length?'<div class="sc2"><div class="sc2-t">&#128680; A SURVEILLER</div>'+flop.map(x=>'<div class="sr"><span class="sk">'+x.s.prenom+' '+x.s.nom+'</span><span class="sv2" style="color:'+(x.moy<10?'var(--r)':'var(--w)')+'">'+ x.moy.toFixed(1)+'/20</span></div>').join('')+'</div>':'')+(absRank.length?'<div class="sc2"><div class="sc2-t">&#128197; ABSENCES FREQUENTES</div>'+absRank.map(x=>'<div class="sr"><span class="sk">'+x.s.prenom+' '+x.s.nom+'</span><span class="sv2" style="color:var(--r)">'+x.n+' abs.</span></div>').join('')+'</div>':'')+(matRank.length?'<div class="sc2"><div class="sc2-t">&#128188; OUBLIS MATERIEL</div>'+matRank.map(x=>'<div class="sr"><span class="sk">'+x.s.prenom+' '+x.s.nom+'</span><span class="sv2" style="color:var(--w)">'+x.n+' oubli(s)</span></div>').join('')+'</div>':'')+'</div>'
+
+  const alerts=getAlerts()
+  const alertsHtml=alerts.length?'<div class="alerts-wrap"><div class="alerts-ttl">&#9888; ALERTES <span style="font-family:var(--fb);font-size:.75rem;background:var(--r);color:var(--d);border-radius:50%;padding:1px 6px;font-weight:700">'+alerts.length+'</span></div>'+alerts.map(a=>'<div class="al-item '+a.level+'"><strong>'+a.s.prenom+' '+a.s.nom+'</strong> <span style="font-size:.72rem;opacity:.7">'+a.s.classe+'</span> — '+a.msg+'</div>').join('')+'</div>':""
+  w.innerHTML='<h2 style="font-family:var(--fn);font-size:.8rem;color:var(--c);letter-spacing:.14rem;margin-bottom:16px">TABLEAU DE BORD — '+new Date().toLocaleDateString('fr-FR')+'</h2>'
+    +alertsHtml
+    +'<div class="stat-grid">'+clCards
+    +(top.length?'<div class="sc2"><div class="sc2-t">&#127942; TOP PERFORMANCES</div>'+top.map((x,i)=>'<div class="sr"><span class="sk">'+(i+1)+'. '+x.s.prenom+' '+x.s.nom+'</span><span class="sv2" style="color:var(--g)">'+x.moy.toFixed(1)+'/20</span></div>').join('')+'</div>':'')
+    +(flop.length?'<div class="sc2"><div class="sc2-t">&#128680; A SURVEILLER</div>'+flop.map(x=>'<div class="sr"><span class="sk">'+x.s.prenom+' '+x.s.nom+'</span><span class="sv2" style="color:'+(x.moy<10?'var(--r)':'var(--w)')+'">'+x.moy.toFixed(1)+'/20</span></div>').join('')+'</div>':'')
+    +(absRank.length?'<div class="sc2"><div class="sc2-t">&#128197; ABSENCES FREQUENTES</div>'+absRank.map(x=>'<div class="sr"><span class="sk">'+x.s.prenom+' '+x.s.nom+'</span><span class="sv2" style="color:var(--r)">'+x.n+' abs.</span></div>').join('')+'</div>':'')
+    +(matRank.length?'<div class="sc2"><div class="sc2-t">&#128188; OUBLIS MATERIEL</div>'+matRank.map(x=>'<div class="sr"><span class="sk">'+x.s.prenom+' '+x.s.nom+'</span><span class="sv2" style="color:var(--w)">'+x.n+' oubli(s)</span></div>').join('')+'</div>':'')
+    +'</div>'
 }
-function openSettingsModal(){const s=DB.settings();document.getElementById('setCd').value=s.code||'jarvis activation';document.getElementById('setMyMail').value=s.myMail||'pierre.perrez22@gmail.com';document.getElementById('setThomasMail').value=s.thomasMail||'thomas.noble05@orange.fr';document.getElementById('setContacts').value=s.contacts||'';document.getElementById('setUrl').value=s.ollamaUrl||'';document.getElementById('setMod').value=s.ollamaModel||'mistral';openModal('moSet')}
-function saveSet(){DB.set('j_set',{code:document.getElementById('setCd').value.trim()||'jarvis activation',myMail:document.getElementById('setMyMail').value.trim(),thomasMail:document.getElementById('setThomasMail').value.trim(),contacts:document.getElementById('setContacts').value.trim(),ollamaUrl:document.getElementById('setUrl').value.trim(),ollamaModel:document.getElementById('setMod').value.trim()||'mistral'});closeModal('moSet');addMsg('j','Reglages enregistres.')}
+
+// ── SETTINGS ──────────────────────────────────────────────────────────────────
+function openSettingsModal(){
+  const s=DB.settings()
+  document.getElementById('setCd').value=s.code||'jarvis activation'
+  document.getElementById('setMyMail').value=s.myMail||'pierre.perrez22@gmail.com'
+  document.getElementById('setThomasMail').value=s.thomasMail||'thomas.noble05@orange.fr'
+  document.getElementById('setContacts').value=s.contacts||''
+  document.getElementById('setUrl').value=s.ollamaUrl||''
+  document.getElementById('setMod').value=s.ollamaModel||'mistral'
+  openModal('moSet')
+}
+function saveSet(){
+  DB.set('j_set',{
+    code:document.getElementById('setCd').value.trim()||'jarvis activation',
+    myMail:document.getElementById('setMyMail').value.trim(),
+    thomasMail:document.getElementById('setThomasMail').value.trim(),
+    contacts:document.getElementById('setContacts').value.trim(),
+    ollamaUrl:document.getElementById('setUrl').value.trim(),
+    ollamaModel:document.getElementById('setMod').value.trim()||'mistral'
+  })
+  closeModal('moSet')
+  addMsg('j','Reglages enregistres avec succes.')
+}
+
+// ── MODALS ────────────────────────────────────────────────────────────────────
 function openModal(id){document.getElementById(id).classList.add('open')}
 function closeModal(id){document.getElementById(id).classList.remove('open')}
 document.addEventListener('click',e=>{if(e.target.classList.contains('mo'))e.target.classList.remove('open')})
+
+// ── ALERTS ────────────────────────────────────────────────────────────────────
+function getAlerts(){
+  const alerts=[]
+  DB.students().forEach(s=>{
+    const abs=DB.absences().filter(a=>a.sid===s.id)
+    const mat=DB.materials().filter(m=>m.sid===s.id)
+    const grd=DB.grades().filter(g=>g.sid===s.id)
+    const unjAbs=abs.filter(a=>!a.justifiee).length
+    if(unjAbs>=3)alerts.push({type:'abs',s,msg:unjAbs+' absences non justifiees',level:'r'})
+    if(mat.length>=3)alerts.push({type:'mat',s,msg:mat.length+' oublis de materiel',level:'w'})
+    if(grd.length>=2){
+      const sorted=[...grd].sort((a,b)=>new Date(b.date)-new Date(a.date))
+      const last=sorted[0].note/sorted[0].noteMax*20
+      const prev=sorted[1].note/sorted[1].noteMax*20
+      if(prev-last>=3)alerts.push({type:'drop',s,msg:'Baisse de '+(prev-last).toFixed(1)+' pts ('+prev.toFixed(1)+'→'+last.toFixed(1)+')',level:'r'})
+    }
+  })
+  return alerts
+}
+
+// ── SVG CHART ────────────────────────────────────────────────────────────────
+function drawGradeChart(grades){
+  if(grades.length<2)return''
+  const sorted=[...grades].sort((a,b)=>new Date(a.date)-new Date(b.date))
+  const vals=sorted.map(g=>g.note/g.noteMax*20)
+  const W=300,H=95
+  const pl=26,pr=8,pt=14,pb=22
+  const iW=W-pl-pr,iH=H-pt-pb
+  const xS=i=>pl+i/(sorted.length-1||1)*iW
+  const yS=v=>pt+iH-(v/20*iH)
+  const pts=vals.map((v,i)=>xS(i)+','+yS(v)).join(' ')
+  const y10=yS(10),y0=yS(0),y20=yS(20)
+  const dots=vals.map((v,i)=>{
+    const col=v<10?'var(--r)':v>=14?'var(--g)':'var(--c)'
+    return '<circle cx="'+xS(i)+'" cy="'+yS(v)+'" r="3.5" fill="'+col+'" stroke="var(--d2)" stroke-width="1.5"/>'
+  }).join('')
+  const vlbls=vals.map((v,i)=>{
+    const col=v<10?'var(--r)':v>=14?'var(--g)':'var(--c)'
+    const above=i>0&&vals[i-1]>v
+    const dy=above?-6:9
+    return '<text x="'+xS(i)+'" y="'+(yS(v)+dy)+'" text-anchor="middle" font-size="7" fill="'+col+'" font-family="monospace">'+v.toFixed(1)+'</text>'
+  }).join('')
+  const dlbls=sorted.map((g,i)=>{
+    const d=new Date(g.date),lbl=(d.getDate())+'/'+(d.getMonth()+1)
+    return '<text x="'+xS(i)+'" y="'+(H-5)+'" text-anchor="middle" font-size="6.5" fill="var(--td)" font-family="sans-serif">'+lbl+'</text>'
+  }).join('')
+  const ylbls=['20','10','0'].map((v,i)=>{
+    const yv=[y20,y10,y0][i]
+    return '<text x="'+(pl-4)+'" y="'+(yv+3)+'" text-anchor="end" font-size="6.5" fill="var(--td)" font-family="monospace">'+v+'</text>'
+  }).join('')
+  return '<div class="chart-box"><div class="chart-lbl">EVOLUTION DES NOTES</div>'
+    +'<svg width="100%" viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg">'
+    +'<line x1="'+pl+'" y1="'+pt+'" x2="'+pl+'" y2="'+(H-pb)+'" stroke="rgba(0,212,255,.18)" stroke-width=".7"/>'
+    +'<line x1="'+pl+'" y1="'+(H-pb)+'" x2="'+(W-pr)+'" y2="'+(H-pb)+'" stroke="rgba(0,212,255,.18)" stroke-width=".7"/>'
+    +'<line x1="'+pl+'" y1="'+y10+'" x2="'+(W-pr)+'" y2="'+y10+'" stroke="var(--r)" stroke-width=".9" stroke-dasharray="4,3" opacity=".45"/>'
+    +ylbls
+    +'<polyline points="'+pts+'" fill="none" stroke="var(--c)" stroke-width="1.6" opacity=".65"/>'
+    +dots+vlbls+dlbls
+    +'</svg></div>'
+}
+
+// ── SESSION MANAGEMENT ────────────────────────────────────────────────────────
+let activeSession=null
+
+function openNewSessionModal(){
+  const classes=[...new Set(DB.students().map(s=>s.classe))].sort()
+  if(!classes.length){showNotif('Ajoutez des eleves avant de creer une seance.');return}
+  const sel=document.getElementById('sesCls')
+  sel.innerHTML=classes.map(c=>'<option value="'+c+'">'+c+'</option>').join('')
+  document.getElementById('sesDate').value=new Date().toISOString().split('T')[0]
+  document.getElementById('sesAct').value=''
+  openModal('moSes')
+}
+
+function startSession(){
+  const date=document.getElementById('sesDate').value
+  const activite=document.getElementById('sesAct').value.trim()
+  const classe=document.getElementById('sesCls').value
+  if(!date||!activite||!classe){showNotif('Remplissez tous les champs.','var(--r)');return}
+  closeModal('moSes')
+  activeSession={date,activite:cap(activite),classe,entries:{}}
+  DB.students().filter(s=>s.classe===classe).forEach(s=>{activeSession.entries[s.id]={status:'present',mat:false}})
+  renderSessionOverlay()
+  document.getElementById('sesOverlay').classList.add('open')
+}
+
+function renderSessionOverlay(){
+  if(!activeSession)return
+  const ses=activeSession
+  const students=DB.students().filter(s=>s.classe===ses.classe)
+  document.getElementById('sesTitleTxt').textContent=ses.activite+' — '+ses.classe
+  document.getElementById('sesSubTxt').textContent='Seance du '+new Date(ses.date).toLocaleDateString('fr-FR')
+  const body=document.getElementById('sesBody')
+  body.innerHTML=students.map(s=>{
+    const e=ses.entries[s.id]||{status:'present',mat:false}
+    let rowCls='present'
+    if(e.status==='absj')rowCls='absj'
+    else if(e.status==='absnj')rowCls='absnj'
+    else if(e.mat)rowCls='matonly'
+    return '<div class="ses-row '+rowCls+'">'
+      +'<div class="ses-sname">'+s.prenom+' '+s.nom+'</div>'
+      +'<div class="ses-btns">'
+      +'<button class="ses-btn sp'+(e.status==='present'?' on':'')+"' onclick=\"setSesStatus("+s.id+",'present')\">&#10003; Present</button>"
+      +'<button class="ses-btn saj'+(e.status==='absj'?' on':'')+"' onclick=\"setSesStatus("+s.id+",'absj')\">ABS-J</button>"
+      +'<button class="ses-btn sanj'+(e.status==='absnj'?' on':'')+"' onclick=\"setSesStatus("+s.id+",'absnj')\">ABS-NJ</button>"
+      +'<button class="ses-btn sm'+(e.mat?' on':'')+"' onclick=\"toggleSesMat("+s.id+")\">&#128188; Materiel</button>"
+      +'</div></div>'
+  }).join('')
+  updateSesSummary()
+}
+
+function setSesStatus(sid,status){
+  if(!activeSession)return
+  if(!activeSession.entries[sid])activeSession.entries[sid]={status:'present',mat:false}
+  activeSession.entries[sid].status=status
+  renderSessionOverlay()
+}
+
+function toggleSesMat(sid){
+  if(!activeSession)return
+  if(!activeSession.entries[sid])activeSession.entries[sid]={status:'present',mat:false}
+  activeSession.entries[sid].mat=!activeSession.entries[sid].mat
+  renderSessionOverlay()
+}
+
+function updateSesSummary(){
+  if(!activeSession)return
+  const ents=Object.values(activeSession.entries)
+  const np=ents.filter(e=>e.status==='present').length
+  const naj=ents.filter(e=>e.status==='absj').length
+  const nanj=ents.filter(e=>e.status==='absnj').length
+  const nm=ents.filter(e=>e.mat).length
+  document.getElementById('sesSummary').textContent=np+' present(s) · '+naj+' ABS-J · '+nanj+' ABS-NJ · '+nm+' materiel oublie'
+}
+
+function saveSession(){
+  if(!activeSession)return
+  const ses=activeSession
+  DB.students().filter(s=>s.classe===ses.classe).forEach(s=>{
+    const e=ses.entries[s.id];if(!e)return
+    if(e.status==='absj')DB.addAbsence({sid:s.id,date:ses.date,justifiee:true,commentaire:ses.activite})
+    else if(e.status==='absnj')DB.addAbsence({sid:s.id,date:ses.date,justifiee:false,commentaire:ses.activite})
+    if(e.mat)DB.addMaterial({sid:s.id,date:ses.date,commentaire:'Oubli lors de '+ses.activite})
+  })
+  const nbAbs=Object.values(ses.entries).filter(e=>e.status!=='present').length
+  const nbMat=Object.values(ses.entries).filter(e=>e.mat).length
+  const sesSave=ses
+  cancelSession()
+  showNotif('Seance enregistree ! '+nbAbs+' absence(s), '+nbMat+' oubli(s).','var(--g)')
+  addMsg('j','Seance '+sesSave.activite+' du '+new Date(sesSave.date).toLocaleDateString('fr-FR')+' enregistree. '+nbAbs+' absence(s) et '+nbMat+' oubli(s) de materiel sauvegardes.')
+  renderStudents()
+  if(selId)selectStu(selId)
+}
+
+function cancelSession(){
+  activeSession=null
+  document.getElementById('sesOverlay').classList.remove('open')
+}
 </script>
 </body>
 </html>
