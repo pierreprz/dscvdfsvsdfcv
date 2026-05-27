@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jarvis — Assistant PE</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- ────── ÉCRAN DE VERROUILLAGE ────── -->
+<div id="lock-screen">
+  <div class="lock-bg"></div>
+  <div class="lock-content">
+    <div class="arc-reactor" id="arcReactor">
+      <div class="arc-ring arc-ring-1"></div>
+      <div class="arc-ring arc-ring-2"></div>
+      <div class="arc-ring arc-ring-3"></div>
+      <div class="arc-core"></div>
+    </div>
+    <h1 class="lock-title">J.A.R.V.I.S</h1>
+    <p class="lock-sub">Just A Rather Very Intelligent System</p>
+    <p class="lock-instruction">Prononcez votre code vocal pour accéder au système</p>
+
+    <button class="btn-voice-unlock" id="btnUnlock" onclick="startUnlock()">
+      <span class="mic-icon">🎤</span>
+      <span>Activer la reconnaissance vocale</span>
+    </button>
+
+    <div class="lock-status" id="lockStatus"></div>
+    <div class="lock-wave" id="lockWave" style="display:none">
+      <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+      <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+      <div class="wave-bar"></div><div class="wave-bar"></div>
+    </div>
+  </div>
+  <div class="hud-corners">
+    <div class="corner tl"></div>
+    <div class="corner tr"></div>
+    <div class="corner bl"></div>
+    <div class="corner br"></div>
+  </div>
+</div>
+
+<!-- ────── APP PRINCIPALE ────── -->
+<div id="app" style="display:none">
+
+  <!-- HEADER -->
+  <header class="hud-header">
+    <div class="header-left">
+      <div class="arc-small"></div>
+      <span class="logo-text">J.A.R.V.I.S</span>
+      <span class="logo-sub">Assistant EPS</span>
+    </div>
+    <nav class="tabs">
+      <button class="tab active" onclick="showTab('chat')" id="tab-chat">🤖 Jarvis</button>
+      <button class="tab" onclick="showTab('students')" id="tab-students">👨‍🎓 Élèves</button>
+      <button class="tab" onclick="showTab('stats')" id="tab-stats">📊 Stats</button>
+    </nav>
+    <div class="header-right">
+      <span class="status-dot"></span>
+      <span class="status-text">EN LIGNE</span>
+      <button class="btn-lock" onclick="lockSystem()" title="Verrouiller">🔒</button>
+    </div>
+  </header>
+
+  <!-- ONGLET JARVIS CHAT -->
+  <div class="tab-content active" id="view-chat">
+    <div class="chat-container">
+      <div class="chat-messages" id="chatMessages">
+        <div class="msg jarvis">
+          <div class="msg-avatar">J</div>
+          <div class="msg-bubble">
+            Bonjour ! Je suis Jarvis, votre assistant personnel. Comment puis-je vous aider aujourd'hui ?
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-input-area">
+        <div class="voice-visualizer" id="voiceViz" style="display:none">
+          <div class="vv-bar"></div><div class="vv-bar"></div><div class="vv-bar"></div>
+          <div class="vv-bar"></div><div class="vv-bar"></div><div class="vv-bar"></div>
+          <div class="vv-bar"></div><div class="vv-bar"></div><div class="vv-bar"></div>
+        </div>
+        <div class="input-row">
+          <input type="text" id="chatInput" placeholder="Tapez votre message ou utilisez le micro..."
+            onkeydown="if(event.key==='Enter') sendMessage()">
+          <button class="btn-mic" id="btnMic" onclick="toggleVoiceInput()" title="Parler">🎤</button>
+          <button class="btn-send" onclick="sendMessage()">➤</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ONGLET ÉLÈVES -->
+  <div class="tab-content" id="view-students" style="display:none">
+    <div class="students-layout">
+
+      <!-- Panneau gauche : liste -->
+      <div class="panel panel-left">
+        <div class="panel-header">
+          <h2>Liste des élèves</h2>
+          <div class="panel-actions">
+            <input type="text" id="searchStudent" placeholder="Rechercher..." oninput="filterStudents()">
+            <select id="filterClasse" onchange="filterStudents()">
+              <option value="">Toutes les classes</option>
+            </select>
+            <button class="btn-primary" onclick="openAddStudent()">+ Ajouter</button>
+          </div>
+        </div>
+        <div class="student-list" id="studentList">Chargement...</div>
+      </div>
+
+      <!-- Panneau droite : détail -->
+      <div class="panel panel-right" id="studentDetail">
+        <div class="detail-placeholder">
+          <div class="placeholder-icon">👨‍🎓</div>
+          <p>Sélectionnez un élève pour voir ses détails</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ONGLET STATS -->
+  <div class="tab-content" id="view-stats" style="display:none">
+    <div class="stats-container" id="statsContainer">Chargement...</div>
+  </div>
+
+</div>
+
+<!-- MODAL AJOUTER ÉLÈVE -->
+<div class="modal-overlay" id="modalStudent" style="display:none">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modalTitle">Ajouter un élève</h3>
+      <button onclick="closeModal('modalStudent')">×</button>
+    </div>
+    <form id="studentForm" onsubmit="saveStudent(event)">
+      <div class="form-row">
+        <label>Prénom</label>
+        <input type="text" id="sPrenom" required>
+      </div>
+      <div class="form-row">
+        <label>Nom</label>
+        <input type="text" id="sNom" required>
+      </div>
+      <div class="form-row">
+        <label>Classe</label>
+        <input type="text" id="sClasse" placeholder="Ex: 3ème B" required>
+      </div>
+      <div class="form-row">
+        <label>Date de naissance</label>
+        <input type="date" id="sDateNaissance">
+      </div>
+      <div class="form-row">
+        <label>Notes générales</label>
+        <textarea id="sNotes" rows="3" placeholder="Observations, particularités..."></textarea>
+      </div>
+      <input type="hidden" id="sId">
+      <div class="form-actions">
+        <button type="button" onclick="closeModal('modalStudent')">Annuler</button>
+        <button type="submit" class="btn-primary">Enregistrer</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL AJOUTER NOTE -->
+<div class="modal-overlay" id="modalGrade" style="display:none">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Ajouter une note</h3>
+      <button onclick="closeModal('modalGrade')">×</button>
+    </div>
+    <form onsubmit="saveGrade(event)">
+      <div class="form-row">
+        <label>Activité</label>
+        <input type="text" id="gActivite" placeholder="Ex: Handball, Natation" required>
+      </div>
+      <div class="form-row">
+        <label>Note</label>
+        <input type="number" id="gNote" min="0" max="20" step="0.5" required>
+      </div>
+      <div class="form-row">
+        <label>Note max</label>
+        <input type="number" id="gNoteMax" value="20" min="1" required>
+      </div>
+      <div class="form-row">
+        <label>Date</label>
+        <input type="date" id="gDate" required>
+      </div>
+      <div class="form-row">
+        <label>Commentaire</label>
+        <textarea id="gCommentaire" rows="2"></textarea>
+      </div>
+      <input type="hidden" id="gStudentId">
+      <div class="form-actions">
+        <button type="button" onclick="closeModal('modalGrade')">Annuler</button>
+        <button type="submit" class="btn-primary">Enregistrer</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL AJOUTER ABSENCE -->
+<div class="modal-overlay" id="modalAbsence" style="display:none">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Enregistrer une absence</h3>
+      <button onclick="closeModal('modalAbsence')">×</button>
+    </div>
+    <form onsubmit="saveAbsence(event)">
+      <div class="form-row">
+        <label>Date</label>
+        <input type="date" id="aDate" required>
+      </div>
+      <div class="form-row">
+        <label>
+          <input type="checkbox" id="aJustifiee"> Absence justifiée
+        </label>
+      </div>
+      <div class="form-row">
+        <label>Commentaire</label>
+        <textarea id="aCommentaire" rows="2"></textarea>
+      </div>
+      <input type="hidden" id="aStudentId">
+      <div class="form-actions">
+        <button type="button" onclick="closeModal('modalAbsence')">Annuler</button>
+        <button type="submit" class="btn-primary">Enregistrer</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
