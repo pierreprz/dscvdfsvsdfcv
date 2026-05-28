@@ -620,7 +620,7 @@ function unlockFail(){
 function setLS(t){document.getElementById('lStatus').textContent=t}
 function lockSys(){continuousMode=false;stopMic();window.speechSynthesis&&window.speechSynthesis.cancel();document.getElementById('app').style.display='none';document.getElementById('lock').style.display='flex';setLS('');document.getElementById('lStatus').style.color='var(--c)';voiceState=null;updateVSBar()}
 
-// ── TTS ──────────────────────────────────────────────────────────────────────────────────────────────
+// ── TTS ─────────────────────────────────────────────────────────────────────
 function speak(text){
   if(!window.speechSynthesis)return
   window.speechSynthesis.cancel()
@@ -1372,7 +1372,7 @@ function exportBulletins(){
   setTimeout(()=>URL.revokeObjectURL(url),1000)
 }
 
-// ── ALERTS ───────────────────────────────────────────────────────────────
+// ── ALERTS ──────────────────────────────────────────────────────────────────────
 function getAlerts(){
   const alerts=[]
   DB.students().forEach(s=>{
